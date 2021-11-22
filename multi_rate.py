@@ -43,7 +43,7 @@ parser.add_argument('-y_rate', type=int, default=20)
 parser.add_argument('-dim_h1', type=int, default=30)
 parser.add_argument('-dim_h2', type=int, default=256)
 parser.add_argument('-lr', type=float, default=0.001)
-parser.add_argument('-weight_decay', type=float, default=0.01)
+parser.add_argument('-weight_decay', type=float, default=0.1)
 parser.add_argument('-step_size', type=int, default=50)
 parser.add_argument('-gamma', type=float, default=0.5)
 parser.add_argument('-epoch', type=int, default=400)
@@ -243,6 +243,7 @@ def main():
     scheduler = lr_scheduler.StepLR(optimizer,
                                     step_size=args.step_size,
                                     gamma=args.gamma)
+    # scheduler = lr_scheduler.CosineAnnealingLR(optimizer, args.tmax)
 
     # data initialization
     dataset_train = MyDataset(X_train_3d, y_train_std)
