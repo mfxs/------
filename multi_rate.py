@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from torch.optim import lr_scheduler
 from sklearn.preprocessing import MinMaxScaler
 from torch.utils.data import Dataset, DataLoader
+from sklearn.model_selection import ParameterGrid
 from sklearn.metrics import r2_score, mean_squared_error
 
 # parameter parser
@@ -47,8 +48,10 @@ parser.add_argument('-lr', type=float, default=0.001)
 parser.add_argument('-weight_decay', type=float, default=0.1)
 parser.add_argument('-step_size', type=int, default=50)
 parser.add_argument('-gamma', type=float, default=0.5)
-parser.add_argument('-epoch', type=int, default=400)
+parser.add_argument('-epoch1', type=int, default=200)
+parser.add_argument('-epoch2', type=int, default=400)
 parser.add_argument('-batch_size', type=int, default=64)
+parser.add_argument('-report_freq', type=int, default=10)
 parser.add_argument('-test_freq', type=int, default=20)
 
 # other parameters
@@ -79,20 +82,15 @@ def data_normalization(X_train, X_test):
 
     for i in range(X_train.shape[1]):
         if i < len(args.x1):
-            index_train = [(_ + 1) * args.x1_rate - 1
-                           for _ in range(X_train.shape[0] // args.x1_rate)]
-            index_test = [(_ + 1) * args.x1_rate - 1
-                          for _ in range(X_test.shape[0] // args.x1_rate)]
+            rate = args.x1_rate
         elif i < len(args.x1) + len(args.x2):
-            index_train = [(_ + 1) * args.x2_rate - 1
-                           for _ in range(X_train.shape[0] // args.x2_rate)]
-            index_test = [(_ + 1) * args.x2_rate - 1
-                          for _ in range(X_test.shape[0] // args.x2_rate)]
+            rate = args.x2_rate
         else:
-            index_train = [(_ + 1) * args.x3_rate - 1
-                           for _ in range(X_train.shape[0] // args.x3_rate)]
-            index_test = [(_ + 1) * args.x3_rate - 1
-                          for _ in range(X_test.shape[0] // args.x3_rate)]
+            rate = args.x3_rate
+        index_train = [(_ + 1) * rate - 1
+                       for _ in range(X_train.shape[0] // rate)]
+        index_test = [(_ + 1) * rate - 1
+                      for _ in range(X_test.shape[0] // rate)]
         min_value = min(X_train[index_train, i])
         max_value = max(X_train[index_train, i])
         X_train_std[index_train, i] = (X_train_std[index_train, i] -
@@ -204,11 +202,162 @@ class CWRNN(nn.Module):
         return torch.stack(y, dim=1)
 
     def reset(self):
-        std = 1. / math.sqrt(self.dim_x * self.dim_h1)
+        std = 1. / math.sqrt(self.dim_h1)
         for i in range(self.dim_y):
             self.w_x[i].data.uniform_(-std, std)
             self.w_h[i].data.uniform_(-std, std)
             self.b[i].data.uniform_(-std, std)
+
+
+def train(X_train, y_train, X_test, y_test, scaler, mode, figure):
+    y_train_raw = scaler.inverse_transform(y_train)
+    if mode == 'val':
+        y_test = scaler.inverse_transform(y_test)
+        n_epoch = args.epoch1
+    elif mode == 'test':
+        n_epoch = args.epoch2
+    else:
+        raise Exception('Wrong mode selection!')
+
+    # model initialization
+    net = CWRNN(X_train.shape[-1], args.multiplier, args.dim_h,
+                y_train.shape[-1]).cuda(args.gpu)
+    criterion = nn.MSELoss(reduction='sum')
+    optimizer = optim.Adam(net.parameters(),
+                           lr=args.lr,
+                           weight_decay=args.weight_decay)
+    scheduler = lr_scheduler.StepLR(optimizer,
+                                    step_size=args.step_size,
+                                    gamma=args.gamma)
+
+    # data initialization
+    dataset_train = MyDataset(X_train, y_train)
+    dataset_test = MyDataset(X_test, y_test)
+    dataloader = DataLoader(dataset_train,
+                            batch_size=args.batch_size,
+                            shuffle=True)
+
+    # training
+    loss_hist = np.zeros(n_epoch)
+    acc_train = np.zeros((n_epoch // args.test_freq, len(args.y)))
+    acc_test = np.zeros((n_epoch // args.test_freq, len(args.y)))
+    for epoch in range(n_epoch):
+        start = time.time()
+        net.train()
+        for batch_X, batch_y in dataloader:
+            optimizer.zero_grad()
+            output = net(batch_X)
+            loss = criterion(batch_y, output)
+            loss.backward()
+            loss_hist[epoch] += loss.item()
+            optimizer.step()
+        scheduler.step()
+        end = time.time()
+
+        if (epoch + 1) % args.report_freq == 0:
+            print('Epoch: {:03d}, Loss: {:.3f}, Time: {:.2f}s'.format(
+                epoch + 1, loss_hist[epoch], end - start))
+
+        if (epoch + 1) % args.test_freq == 0:
+            net.eval()
+            with torch.no_grad():
+                y_fit = scaler.inverse_transform(
+                    net(dataset_train.X).cpu().numpy())
+                y_pred = scaler.inverse_transform(
+                    net(dataset_test.X).cpu().numpy())
+            r2_train = [
+                round(100 * _, 2)
+                for _ in r2_score(y_train_raw, y_fit, multioutput='raw_values')
+            ]
+            r2_test = [
+                round(100 * _, 2)
+                for _ in r2_score(y_test, y_pred, multioutput='raw_values')
+            ]
+            rmse_train = [
+                round(math.sqrt(_), 3) for _ in mean_squared_error(
+                    y_train_raw, y_fit, multioutput='raw_values')
+            ]
+            rmse_test = [
+                round(math.sqrt(_), 3) for _ in mean_squared_error(
+                    y_test, y_pred, multioutput='raw_values')
+            ]
+            print('-' * 50)
+            print('Performance on train set: R2: {}, RMSE: {}'.format(
+                r2_train, rmse_train))
+            print('Performance on test set: R2: {}, RMSE: {}'.format(
+                r2_test, rmse_test))
+            print('-' * 50)
+            acc_train[(epoch + 1) // args.test_freq - 1, :] = r2_train
+            acc_test[(epoch + 1) // args.test_freq - 1, :] = r2_test
+    print('Training is finished!')
+
+    # plot
+    if figure:
+        plot_loss_acc(loss_hist, acc_train, acc_test)
+        plot_prediction_curve(y_train_raw, y_fit, r2_train, rmse_train, y_test,
+                              y_pred, r2_test, rmse_test)
+
+    return acc_train, acc_test
+
+
+def plot_loss_acc(loss_hist, acc_train, acc_test):
+    plt.figure(figsize=args.figsize, dpi=args.dpi)
+    plt.subplot(211)
+    plt.plot(list(range(1, loss_hist.shape[0] + 1)), loss_hist, label='Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss Value')
+    plt.grid()
+    plt.legend()
+    plt.title('Loss curve during training')
+    plt.subplot(212)
+    for i in range(len(args.y)):
+        plt.plot([
+            args.test_freq * (_ + 1)
+            for _ in range(loss_hist.shape[0] // args.test_freq)
+        ],
+                 acc_train[:, i],
+                 label='QV{}(train)'.format(i + 1))
+        plt.plot([
+            args.test_freq * (_ + 1)
+            for _ in range(loss_hist.shape[0] // args.test_freq)
+        ],
+                 acc_test[:, i],
+                 label='QV{}(test)'.format(i + 1))
+    plt.xlabel('Epoch')
+    plt.ylabel('R2 Value')
+    plt.grid()
+    plt.legend()
+    plt.title('Accuracy curve during training')
+    plt.savefig(args.path + 'Loss & Acc.png')
+    plt.close()
+
+
+def plot_prediction_curve(y_train, y_fit, r2_train, rmse_train, y_test, y_pred,
+                          r2_test, rmse_test):
+    for i in range(len(args.y)):
+        plt.figure(figsize=args.figsize, dpi=args.dpi)
+        plt.subplot(211)
+        plt.plot(y_train[:, i], label='Ground Truth')
+        plt.plot(y_fit[:, i], label='Prediciton')
+        plt.xlabel('Sample')
+        plt.ylabel('Value')
+        plt.grid()
+        plt.legend()
+        plt.title(
+            'Prediction curve on train set (R2: {:.2f}%, RMSE: {:.3f})'.format(
+                r2_train[i], rmse_train[i]))
+        plt.subplot(212)
+        plt.plot(y_test[:, i], label='Ground Truth')
+        plt.plot(y_pred[:, i], label='Prediciton')
+        plt.xlabel('Sample')
+        plt.ylabel('Value')
+        plt.grid()
+        plt.legend()
+        plt.title(
+            'Prediction curve on test set (R2: {:.2f}%, RMSE: {:.3f})'.format(
+                r2_test[i], rmse_test[i]))
+        plt.savefig(args.path + 'QV_{}.png'.format(i + 1))
+        plt.close()
 
 
 # main
@@ -262,126 +411,53 @@ def main():
     X_train_3d = np.stack(X_train_3d)
     X_test_3d = np.stack(X_test_3d)
 
-    # model initialization
-    net = CWRNN(X_train.shape[-1], args.multiplier, args.dim_h,
-                y_train.shape[-1]).cuda(args.gpu)
-    criterion = nn.MSELoss(reduction='sum')
-    optimizer = optim.Adam(net.parameters(),
-                           lr=args.lr,
-                           weight_decay=args.weight_decay)
-    scheduler = lr_scheduler.StepLR(optimizer,
-                                    step_size=args.step_size,
-                                    gamma=args.gamma)
+    # model selection
+    print('=' * 50)
+    print('Model selection')
+    print('=' * 50)
+    param_grid = {
+        'multiplier': [15, 30],
+        'dim_h': [256, 128],
+        'lr': [0.01, 0.001, 0.0001],
+        'weight_decay': [0.1, 0.05, 0.01, 0.005],
+        'batch_size': [64, 128]
+    }
+    record = {}
+    r2_best = float('-inf')
+    for i, param in enumerate(ParameterGrid(param_grid)):
+        print('Model {}'.format(i + 1))
+        print(param)
+        for key, value in param.items():
+            exec('args.{}={}'.format(key, value))
+        r2_train, r2_val = train(X_train_3d[:-args.num_val // args.y_rate],
+                                 y_train_std[:-args.num_val // args.y_rate],
+                                 X_train_3d[-args.num_val // args.y_rate:],
+                                 y_train_std[-args.num_val // args.y_rate:],
+                                 scaler,
+                                 mode='val',
+                                 figure=False)
+        print('*' * 50)
+        print('*' * 50)
+        record.update({str(param): [r2_train[-1], r2_val[-1]]})
+        if sum(r2_val[-1]) > r2_best:
+            r2_best = sum(r2_val[-1])
+            param_best = param
+    print(record)
+    print(param_best)
 
-    # data initialization
-    dataset_train = MyDataset(X_train_3d, y_train_std)
-    dataset_test = MyDataset(X_test_3d, y_test)
-    dataloader = DataLoader(dataset_train,
-                            batch_size=args.batch_size,
-                            shuffle=True)
-
-    # training
-    loss_hist = np.zeros(args.epoch)
-    acc_train = np.zeros((args.epoch // args.test_freq, len(args.y)))
-    acc_test = np.zeros((args.epoch // args.test_freq, len(args.y)))
-    for epoch in range(args.epoch):
-        start = time.time()
-        net.train()
-        for batch_X, batch_y in dataloader:
-            optimizer.zero_grad()
-            output = net(batch_X)
-            loss = criterion(batch_y, output)
-            loss.backward()
-            loss_hist[epoch] += loss.item()
-            optimizer.step()
-        scheduler.step()
-        end = time.time()
-
-        print('Epoch: {:03d}, Loss: {:.3f}, Time: {:.2f}s'.format(
-            epoch + 1, loss_hist[epoch], end - start))
-
-        if (epoch + 1) % args.test_freq == 0:
-            net.eval()
-            with torch.no_grad():
-                y_fit = scaler.inverse_transform(
-                    net(dataset_train.X).cpu().numpy())
-                y_pred = scaler.inverse_transform(
-                    net(dataset_test.X).cpu().numpy())
-            r2_train = [
-                100 * _
-                for _ in r2_score(y_train, y_fit, multioutput='raw_values')
-            ]
-            r2_test = [
-                100 * _
-                for _ in r2_score(y_test, y_pred, multioutput='raw_values')
-            ]
-            rmse_train = [
-                math.sqrt(_) for _ in mean_squared_error(
-                    y_train, y_fit, multioutput='raw_values')
-            ]
-            rmse_test = [
-                math.sqrt(_) for _ in mean_squared_error(
-                    y_test, y_pred, multioutput='raw_values')
-            ]
-            print('=' * 50)
-            print('Performance on train set: R2: {}, RMSE: {}'.format(
-                r2_train, rmse_train))
-            print('Performance on test set: R2: {}, RMSE: {}'.format(
-                r2_test, rmse_test))
-            print('=' * 50)
-            acc_train[(epoch + 1) // args.test_freq - 1, :] = r2_train
-            acc_test[(epoch + 1) // args.test_freq - 1, :] = r2_test
-    print('Training is finished!')
-
-    # plot loss & acc
-    plt.figure(figsize=args.figsize, dpi=args.dpi)
-    plt.subplot(211)
-    plt.plot(list(range(1, args.epoch + 1)), loss_hist)
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss Value')
-    plt.grid()
-    plt.title('Loss curve during training')
-    plt.subplot(212)
-    for i in range(len(args.y)):
-        plt.plot([20 * (_ + 1) for _ in range(args.epoch // args.test_freq)],
-                 acc_train[:, i],
-                 label='QV{}(train)'.format(i + 1))
-        plt.plot([20 * (_ + 1) for _ in range(args.epoch // args.test_freq)],
-                 acc_test[:, i],
-                 label='QV{}(test)'.format(i + 1))
-    plt.xlabel('Epoch')
-    plt.ylabel('R2 Value')
-    plt.grid()
-    plt.legend()
-    plt.title('Accuracy curve during training')
-    plt.savefig(args.path + 'Loss & Acc.png')
-    plt.close()
-
-    # plot prediction curve
-    for i in range(len(args.y)):
-        plt.figure(figsize=args.figsize, dpi=args.dpi)
-        plt.subplot(211)
-        plt.plot(y_train[:, i], label='Ground Truth')
-        plt.plot(y_fit[:, i], label='Prediciton')
-        plt.xlabel('Sample')
-        plt.ylabel('Value')
-        plt.grid()
-        plt.legend()
-        plt.title(
-            'Prediction curve on train set (R2: {:.2f}%, RMSE: {:.3f})'.format(
-                r2_train[i], rmse_train[i]))
-        plt.subplot(212)
-        plt.plot(y_test[:, i], label='Ground Truth')
-        plt.plot(y_pred[:, i], label='Prediciton')
-        plt.xlabel('Sample')
-        plt.ylabel('Value')
-        plt.grid()
-        plt.legend()
-        plt.title(
-            'Prediction curve on test set (R2: {:.2f}%, RMSE: {:.3f})'.format(
-                r2_test[i], rmse_test[i]))
-        plt.savefig(args.path + 'QV_{}.png'.format(i + 1))
-        plt.close()
+    # retraining
+    print('=' * 50)
+    print('Model Retraining')
+    print('=' * 50)
+    for key, value in param_best.items():
+        exec('args.{}={}'.format(key, value))
+    train(X_train_3d,
+          y_train_std,
+          X_test_3d,
+          y_test,
+          scaler,
+          mode='test',
+          figure=True)
 
     # end
     pass
