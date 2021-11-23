@@ -17,12 +17,13 @@ from sklearn.metrics import r2_score, mean_squared_error
 parser = argparse.ArgumentParser(description='multi-rate soft sensor')
 
 # data parameters
-parser.add_argument('-nrows', type=int, default=12000)
-parser.add_argument('-num_train', type=int, default=8000)
 parser.add_argument('-skiprows', type=int, default=23000)
+parser.add_argument('-num_sample', type=int, default=12000)
+parser.add_argument('-num_train', type=int, default=8000)
+parser.add_argument('-num_val', type=int, default=2000)
 
 # multi-rate parameters
-parser.add_argument('-miss_value', type=int, default=-1)
+parser.add_argument('-miss_value', type=int, default=0)
 parser.add_argument('-x1', type=list, default=[0, 1, 2])
 parser.add_argument('-x1_rate', type=int, default=1)
 parser.add_argument('-x2',
@@ -40,8 +41,8 @@ parser.add_argument('-y', type=list, default=[9, 21])
 parser.add_argument('-y_rate', type=int, default=20)
 
 # model parameters
-parser.add_argument('-dim_h1', type=int, default=30)
-parser.add_argument('-dim_h2', type=int, default=256)
+parser.add_argument('-multiplier', type=int, default=30)
+parser.add_argument('-dim_h', type=int, default=256)
 parser.add_argument('-lr', type=float, default=0.001)
 parser.add_argument('-weight_decay', type=float, default=0.1)
 parser.add_argument('-step_size', type=int, default=50)
@@ -52,6 +53,8 @@ parser.add_argument('-test_freq', type=int, default=20)
 
 # other parameters
 parser.add_argument('-path', type=str, default='multi_rate/')
+parser.add_argument('-figsize', type=tuple, default=(10, 10))
+parser.add_argument('-dpi', type=int, default=150)
 parser.add_argument('-seed', type=int, default=123)
 parser.add_argument('-gpu', type=int, default=2)
 
@@ -59,7 +62,7 @@ args = parser.parse_args()
 
 
 def data_generation(data):
-    for i in range(args.nrows):
+    for i in range(args.num_sample):
         if (i + 1) % args.x1_rate != 0:
             data[i, args.x1] = args.miss_value
         if (i + 1) % args.x2_rate != 0:
@@ -71,20 +74,31 @@ def data_generation(data):
 
 
 def data_normalization(X_train, X_test):
-    min_list = []
-    max_list = []
     X_train_std = X_train.copy()
     X_test_std = X_test.copy()
 
     for i in range(X_train.shape[1]):
-        min_list.append(min(X_train[X_train[:, i] != args.miss_value, i]))
-        max_list.append(max(X_train[X_train[:, i] != args.miss_value, i]))
-        X_train_std[X_train_std[:, i] != args.miss_value,
-                    i] = (X_train_std[X_train_std[:, i] != args.miss_value, i]
-                          - min_list[-1]) / (max_list[-1] - min_list[-1])
-        X_test_std[X_test_std[:, i] != args.miss_value,
-                   i] = (X_test_std[X_test_std[:, i] != args.miss_value, i] -
-                         min_list[-1]) / (max_list[-1] - min_list[-1])
+        if i < len(args.x1):
+            index_train = [(_ + 1) * args.x1_rate - 1
+                           for _ in range(X_train.shape[0] // args.x1_rate)]
+            index_test = [(_ + 1) * args.x1_rate - 1
+                          for _ in range(X_test.shape[0] // args.x1_rate)]
+        elif i < len(args.x1) + len(args.x2):
+            index_train = [(_ + 1) * args.x2_rate - 1
+                           for _ in range(X_train.shape[0] // args.x2_rate)]
+            index_test = [(_ + 1) * args.x2_rate - 1
+                          for _ in range(X_test.shape[0] // args.x2_rate)]
+        else:
+            index_train = [(_ + 1) * args.x3_rate - 1
+                           for _ in range(X_train.shape[0] // args.x3_rate)]
+            index_test = [(_ + 1) * args.x3_rate - 1
+                          for _ in range(X_test.shape[0] // args.x3_rate)]
+        min_value = min(X_train[index_train, i])
+        max_value = max(X_train[index_train, i])
+        X_train_std[index_train, i] = (X_train_std[index_train, i] -
+                                       min_value) / (max_value - min_value)
+        X_test_std[index_test, i] = (X_test_std[index_test, i] -
+                                     min_value) / (max_value - min_value)
 
     return X_train_std, X_test_std
 
@@ -106,88 +120,101 @@ class MyDataset(Dataset):
 
 
 class CWRNN(nn.Module):
-    def __init__(self, dim_x, dim_h1, dim_h2, dim_y):
+    def __init__(self, dim_x, multiplier, dim_h, dim_y):
         super(CWRNN, self).__init__()
         self.dim_x = dim_x
-        self.dim_h1 = dim_h1
-        self.dim_h2 = dim_h2
+        self.multiplier = multiplier
+        self.dim_h1 = dim_x * multiplier
+        self.dim_h2 = dim_h
         self.dim_y = dim_y
-        self.w_x = nn.Parameter(torch.FloatTensor(dim_x, dim_x * dim_h1))
-        self.w_h = nn.Parameter(
-            torch.FloatTensor(dim_x * dim_h1, dim_x * dim_h1))
-        self.b = nn.Parameter(torch.FloatTensor(dim_x * dim_h1))
+        self.w_x = nn.ParameterList()
+        self.w_h = nn.ParameterList()
+        self.b = nn.ParameterList()
         self.act = nn.Tanh()
-        self.mlp = nn.Sequential(nn.Linear(dim_x * dim_h1, dim_h2), nn.ReLU(),
-                                 nn.Linear(dim_h2, dim_y))
+        self.mlp = nn.ModuleList()
+        for _ in range(dim_y):
+            self.w_x.append(nn.Parameter(torch.FloatTensor(dim_x,
+                                                           self.dim_h1)))
+            self.w_h.append(
+                nn.Parameter(torch.FloatTensor(self.dim_h1, self.dim_h1)))
+            self.b.append(nn.Parameter(torch.FloatTensor(self.dim_h1)))
+            self.mlp.append(
+                nn.Sequential(nn.Linear(self.dim_h1, self.dim_h2), nn.ReLU(),
+                              nn.Linear(self.dim_h2, 1)))
         self.reset()
 
     def forward(self, x):
-        h1 = torch.zeros(x.shape[0], len(args.x1) * self.dim_h1).cuda(args.gpu)
-        h2 = torch.zeros(x.shape[0], len(args.x2) * self.dim_h1).cuda(args.gpu)
-        h3 = torch.zeros(x.shape[0], len(args.x3) * self.dim_h1).cuda(args.gpu)
-        for i in range(x.shape[1]):
-            h = torch.cat((h1, h2, h3), dim=1)
-            if (i + 1) % args.x2_rate == 0:
-                if (i + 1) % args.x3_rate == 0:
-                    h1 = self.act(
-                        torch.matmul(x[:, i], self.w_x[:, :len(args.x1) *
-                                                       self.dim_h1]) +
-                        torch.matmul(h, self.w_h[:, :len(args.x1) *
-                                                 self.dim_h1]))
-                    h2 = self.act(
-                        torch.matmul(
-                            x[:, i], self.w_x[:,
-                                              len(args.x1) * self.dim_h1:
-                                              (len(args.x1) + len(args.x2)) *
-                                              self.dim_h1]) +
-                        torch.matmul(
-                            h, self.w_h[:,
-                                        len(args.x1) * self.dim_h1:
-                                        (len(args.x1) + len(args.x2)) *
-                                        self.dim_h1]))
-                    h3 = self.act(
-                        torch.matmul(x[:, i], self.w_x[:, -len(args.x3) *
-                                                       self.dim_h1:]) +
-                        torch.matmul(h, self.w_h[:, -len(args.x3) *
-                                                 self.dim_h1:]))
+        y = []
+        for i in range(self.dim_y):
+            h1 = torch.zeros(x.shape[0],
+                             len(args.x1) * self.multiplier).cuda(args.gpu)
+            h2 = torch.zeros(x.shape[0],
+                             len(args.x2) * self.multiplier).cuda(args.gpu)
+            h3 = torch.zeros(x.shape[0],
+                             len(args.x3) * self.multiplier).cuda(args.gpu)
+            for j in range(x.shape[1]):
+                h = torch.cat((h1, h2, h3), dim=1)
+                if (j + 1) % args.x2_rate == 0:
+                    if (j + 1) % args.x3_rate == 0:
+                        h1 = self.act(
+                            torch.matmul(x[:,
+                                           j], self.w_x[i][:, :h1.shape[1]]) +
+                            torch.matmul(h, self.w_h[i][:, :h1.shape[1]]) +
+                            self.b[i][:h1.shape[1]])
+                        h2 = self.act(
+                            torch.matmul(
+                                x[:,
+                                  j], self.w_x[i][:, h1.shape[1]:h1.shape[1] +
+                                                  h2.shape[1]]) +
+                            torch.matmul(
+                                h, self.w_h[i][:, h1.shape[1]:h1.shape[1] +
+                                               h2.shape[1]]) +
+                            self.b[i][h1.shape[1]:h1.shape[1] + h2.shape[1]])
+                        h3 = self.act(
+                            torch.matmul(x[:, j], self.w_x[i][:,
+                                                              -h3.shape[1]:]) +
+                            torch.matmul(h, self.w_h[i][:, -h3.shape[1]:]) +
+                            self.b[i][-h3.shape[1]:])
+                    else:
+                        h1 = self.act(
+                            torch.matmul(
+                                x[:,
+                                  j, :len(args.x1) + len(args.x2)], self.w_x[i]
+                                [:len(args.x1) + len(args.x2), :h1.shape[1]]) +
+                            torch.matmul(h, self.w_h[i][:, :h1.shape[1]]) +
+                            self.b[i][:h1.shape[1]])
+                        h2 = self.act(
+                            torch.matmul(
+                                x[:,
+                                  j, :len(args.x1) + len(args.x2)], self.w_x[i]
+                                [:len(args.x1) + len(args.x2),
+                                 h1.shape[1]:h1.shape[1] + h2.shape[1]]) +
+                            torch.matmul(
+                                h, self.w_h[i][:, h1.shape[1]:h1.shape[1] +
+                                               h2.shape[1]]) +
+                            self.b[i][h1.shape[1]:h1.shape[1] + h2.shape[1]])
                 else:
                     h1 = self.act(
-                        torch.matmul(
-                            x[:, i, :len(args.x1) + len(args.x2)], self.
-                            w_x[:len(args.x1) + len(args.x2), :len(args.x1) *
-                                self.dim_h1]) +
-                        torch.matmul(h, self.w_h[:, :len(args.x1) *
-                                                 self.dim_h1]))
-                    h2 = self.act(
-                        torch.matmul(
-                            x[:, i, :len(args.x1) + len(args.x2)], self.
-                            w_x[:len(args.x1) + len(args.x2),
-                                len(args.x1) * self.dim_h1:
-                                (len(args.x1) + len(args.x2)) * self.dim_h1]) +
-                        torch.matmul(
-                            h, self.w_h[:,
-                                        len(args.x1) * self.dim_h1:
-                                        (len(args.x1) + len(args.x2)) *
-                                        self.dim_h1]))
-            else:
-                h1 = self.act(
-                    torch.matmul(
-                        x[:, i, :len(args.x1)],
-                        self.w_x[:len(args.x1), :len(args.x1) * self.dim_h1]) +
-                    torch.matmul(h, self.w_h[:, :len(args.x1) * self.dim_h1]))
+                        torch.matmul(x[:, j, :len(args.x1)], self.w_x[i]
+                                     [:len(args.x1), :h1.shape[1]]) +
+                        torch.matmul(h, self.w_h[i][:, :h1.shape[1]]) +
+                        self.b[i][:h1.shape[1]])
 
-        y = self.mlp(torch.cat((h1, h2, h3), dim=1))
-        return y
+            y.append(self.mlp[i](torch.cat((h1, h2, h3), dim=1)).squeeze())
+        return torch.stack(y, dim=1)
 
     def reset(self):
-        std = 1. / math.sqrt(self.dim_h1)
-        self.w_x.data.uniform_(-std, std)
-        self.w_h.data.uniform_(-std, std)
-        self.b.data.uniform_(-std, std)
+        std = 1. / math.sqrt(self.dim_x * self.dim_h1)
+        for i in range(self.dim_y):
+            self.w_x[i].data.uniform_(-std, std)
+            self.w_h[i].data.uniform_(-std, std)
+            self.b[i].data.uniform_(-std, std)
 
 
 # main
 def main():
+
+    # seed fixed
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
     torch.cuda.manual_seed_all(args.seed)
@@ -199,14 +226,14 @@ def main():
                          skiprows=[2])
     # columns = data.columns
     # for i in range(data.shape[1]):
-    #     plt.figure()
+    #     plt.figure(figsize=args.figsize, dpi=args.dpi)
     #     plt.plot(data.iloc[:, i])
     #     plt.xlabel('Sample')
     #     plt.ylabel('Value')
     #     plt.grid()
     #     plt.savefig(args.path + columns[i] + '.png')
     #     plt.close()
-    data = data.values[args.skiprows:args.skiprows + args.nrows]
+    data = data.values[args.skiprows:args.skiprows + args.num_sample]
 
     # data generation
     data_generation(data)
@@ -218,8 +245,10 @@ def main():
 
     # data normalization
     X_train_std, X_test_std = data_normalization(X_train, X_test)
-    y_train = y_train[y_train[:, 0] != args.miss_value]
-    y_test = y_test[y_test[:, 0] != args.miss_value]
+    y_train = y_train[[(_ + 1) * args.y_rate - 1
+                       for _ in range(y_train.shape[0] // args.y_rate)]]
+    y_test = y_test[[(_ + 1) * args.y_rate - 1
+                     for _ in range(y_test.shape[0] // args.y_rate)]]
     scaler = MinMaxScaler().fit(y_train)
     y_train_std = scaler.transform(y_train)
 
@@ -234,7 +263,7 @@ def main():
     X_test_3d = np.stack(X_test_3d)
 
     # model initialization
-    net = CWRNN(X_train.shape[-1], args.dim_h1, args.dim_h2,
+    net = CWRNN(X_train.shape[-1], args.multiplier, args.dim_h,
                 y_train.shape[-1]).cuda(args.gpu)
     criterion = nn.MSELoss(reduction='sum')
     optimizer = optim.Adam(net.parameters(),
@@ -243,7 +272,6 @@ def main():
     scheduler = lr_scheduler.StepLR(optimizer,
                                     step_size=args.step_size,
                                     gamma=args.gamma)
-    # scheduler = lr_scheduler.CosineAnnealingLR(optimizer, args.tmax)
 
     # data initialization
     dataset_train = MyDataset(X_train_3d, y_train_std)
@@ -306,7 +334,7 @@ def main():
     print('Training is finished!')
 
     # plot loss & acc
-    plt.figure()
+    plt.figure(figsize=args.figsize, dpi=args.dpi)
     plt.subplot(211)
     plt.plot(list(range(1, args.epoch + 1)), loss_hist)
     plt.xlabel('Epoch')
@@ -331,7 +359,7 @@ def main():
 
     # plot prediction curve
     for i in range(len(args.y)):
-        plt.figure()
+        plt.figure(figsize=args.figsize, dpi=args.dpi)
         plt.subplot(211)
         plt.plot(y_train[:, i], label='Ground Truth')
         plt.plot(y_fit[:, i], label='Prediciton')
