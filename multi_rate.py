@@ -1,6 +1,7 @@
 # package
 import math
 import time
+import json
 import torch
 import argparse
 import numpy as np
@@ -42,6 +43,7 @@ parser.add_argument('-y', type=list, default=[9, 21])
 parser.add_argument('-y_rate', type=int, default=20)
 
 # model parameters
+parser.add_argument('-model', type=str, default='L-MLP')
 parser.add_argument('-multiplier', type=int, default=30)
 parser.add_argument('-dim_h', type=int, default=256)
 parser.add_argument('-lr', type=float, default=0.001)
@@ -59,7 +61,7 @@ parser.add_argument('-path', type=str, default='multi_rate/')
 parser.add_argument('-figsize', type=tuple, default=(10, 10))
 parser.add_argument('-dpi', type=int, default=150)
 parser.add_argument('-seed', type=int, default=123)
-parser.add_argument('-gpu', type=int, default=2)
+parser.add_argument('-gpu', type=int, default=1)
 
 args = parser.parse_args()
 
@@ -115,6 +117,89 @@ class MyDataset(Dataset):
 
     def __len__(self):
         return self.X.shape[0]
+
+
+class MLP(nn.Module):
+    def __init__(self, dim_x, multiplier, dim_h, dim_y):
+        super(MLP, self).__init__()
+        self.dim_x = dim_x
+        self.multiplier = multiplier
+        self.dim_h1 = dim_x * multiplier
+        self.dim_h2 = dim_h
+        self.dim_y = dim_y
+        self.mlp = nn.ModuleList()
+        for _ in range(dim_y):
+            self.mlp.append(
+                nn.Sequential(nn.Linear(self.dim_x, self.dim_h1), nn.ReLU(),
+                              nn.Linear(self.dim_h1, self.dim_h2), nn.ReLU(),
+                              nn.Linear(self.dim_h2, 1)))
+
+    def forward(self, x):
+        y = []
+        for i in range(self.dim_y):
+            y.append(self.mlp[i](x[:, -1]).squeeze())
+        return torch.stack(y, dim=1)
+
+
+class L_MLP(nn.Module):
+    def __init__(self, dim_x, multiplier, dim_h, dim_y):
+        super(L_MLP, self).__init__()
+        self.dim_x = len(args.x1) * (args.y_rate // args.x1_rate) + len(
+            args.x2) * (args.y_rate // args.x2_rate) + len(
+                args.x3) * (args.y_rate // args.x3_rate)
+        self.multiplier = multiplier
+        self.dim_h1 = dim_x * multiplier
+        self.dim_h2 = dim_h
+        self.dim_y = dim_y
+        self.mlp = nn.ModuleList()
+        for _ in range(dim_y):
+            self.mlp.append(
+                nn.Sequential(nn.Linear(self.dim_x, self.dim_h1), nn.ReLU(),
+                              nn.Linear(self.dim_h1, self.dim_h2), nn.ReLU(),
+                              nn.Linear(self.dim_h2, 1)))
+
+    def forward(self, x):
+        y = []
+        x_lift = torch.cat([
+            x[:,
+              list(range(args.x1_rate - 1, args.y_rate, args.x1_rate)
+                   ), :len(args.x1)].reshape(x.shape[0], -1),
+            x[:,
+              list(range(args.x2_rate - 1, args.y_rate, args.x2_rate)),
+              len(args.x1):len(args.x1) + len(args.x2)].reshape(
+                  x.shape[0], -1),
+            x[:,
+              list(range(args.x3_rate - 1, args.y_rate, args.x3_rate)),
+              -len(args.x3):].reshape(x.shape[0], -1)
+        ],
+                           dim=1)
+        for i in range(self.dim_y):
+            y.append(self.mlp[i](x_lift).squeeze())
+        return torch.stack(y, dim=1)
+
+
+class RNN(nn.Module):
+    def __init__(self, dim_x, multiplier, dim_h, dim_y):
+        super(RNN, self).__init__()
+        self.dim_x = dim_x
+        self.multiplier = multiplier
+        self.dim_h1 = dim_x * multiplier
+        self.dim_h2 = dim_h
+        self.dim_y = dim_y
+        self.rnn = nn.ModuleList()
+        self.mlp = nn.ModuleList()
+        for _ in range(dim_y):
+            self.rnn.append(nn.RNN(dim_x, self.dim_h1, batch_first=True))
+            self.mlp.append(
+                nn.Sequential(nn.Linear(self.dim_h1, self.dim_h2), nn.ReLU(),
+                              nn.Linear(self.dim_h2, 1)))
+
+    def forward(self, x):
+        y = []
+        for i in range(self.dim_y):
+            _, h = self.rnn[i](x)
+            y.append(self.mlp[i](h).squeeze())
+        return torch.stack(y, dim=1)
 
 
 class CWRNN(nn.Module):
@@ -209,19 +294,35 @@ class CWRNN(nn.Module):
             self.b[i].data.uniform_(-std, std)
 
 
-def train(X_train, y_train, X_test, y_test, scaler, mode, figure):
+def train(X_train, y_train, X_test, y_test, scaler, mode):
     y_train_raw = scaler.inverse_transform(y_train)
+
+    # mode selection
     if mode == 'val':
         y_test = scaler.inverse_transform(y_test)
         n_epoch = args.epoch1
+        test_freq = n_epoch
     elif mode == 'test':
         n_epoch = args.epoch2
+        test_freq = args.test_freq
     else:
         raise Exception('Wrong mode selection!')
 
     # model initialization
-    net = CWRNN(X_train.shape[-1], args.multiplier, args.dim_h,
-                y_train.shape[-1]).cuda(args.gpu)
+    if args.model == 'CWRNN':
+        net = CWRNN(X_train.shape[-1], args.multiplier, args.dim_h,
+                    y_train.shape[-1]).cuda(args.gpu)
+    elif args.model == 'RNN':
+        net = RNN(X_train.shape[-1], args.multiplier, args.dim_h,
+                  y_train.shape[-1]).cuda(args.gpu)
+    elif args.model == 'L-MLP':
+        net = L_MLP(X_train.shape[-1], args.multiplier, args.dim_h,
+                    y_train.shape[-1]).cuda(args.gpu)
+    elif args.model == 'MLP':
+        net = MLP(X_train.shape[-1], args.multiplier, args.dim_h,
+                  y_train.shape[-1]).cuda(args.gpu)
+    else:
+        raise Exception('Wrong model selection!')
     criterion = nn.MSELoss(reduction='sum')
     optimizer = optim.Adam(net.parameters(),
                            lr=args.lr,
@@ -239,8 +340,8 @@ def train(X_train, y_train, X_test, y_test, scaler, mode, figure):
 
     # training
     loss_hist = np.zeros(n_epoch)
-    acc_train = np.zeros((n_epoch // args.test_freq, len(args.y)))
-    acc_test = np.zeros((n_epoch // args.test_freq, len(args.y)))
+    acc_train = np.zeros((n_epoch // test_freq, len(args.y)))
+    acc_test = np.zeros((n_epoch // test_freq, len(args.y)))
     for epoch in range(n_epoch):
         start = time.time()
         net.train()
@@ -258,7 +359,7 @@ def train(X_train, y_train, X_test, y_test, scaler, mode, figure):
             print('Epoch: {:03d}, Loss: {:.3f}, Time: {:.2f}s'.format(
                 epoch + 1, loss_hist[epoch], end - start))
 
-        if (epoch + 1) % args.test_freq == 0:
+        if (epoch + 1) % test_freq == 0:
             net.eval()
             with torch.no_grad():
                 y_fit = scaler.inverse_transform(
@@ -287,12 +388,12 @@ def train(X_train, y_train, X_test, y_test, scaler, mode, figure):
             print('Performance on test set: R2: {}, RMSE: {}'.format(
                 r2_test, rmse_test))
             print('-' * 50)
-            acc_train[(epoch + 1) // args.test_freq - 1, :] = r2_train
-            acc_test[(epoch + 1) // args.test_freq - 1, :] = r2_test
+            acc_train[(epoch + 1) // test_freq - 1, :] = r2_train
+            acc_test[(epoch + 1) // test_freq - 1, :] = r2_test
     print('Training is finished!')
 
     # plot
-    if figure:
+    if mode == 'test':
         plot_loss_acc(loss_hist, acc_train, acc_test)
         plot_prediction_curve(y_train_raw, y_fit, r2_train, rmse_train, y_test,
                               y_pred, r2_test, rmse_test)
@@ -416,16 +517,15 @@ def main():
     print('Model selection')
     print('=' * 50)
     param_grid = {
-        'multiplier': [15, 30],
-        'dim_h': [256, 128],
-        'lr': [0.01, 0.001, 0.0001],
+        'multiplier': [15, 30, 60],
+        'dim_h': [256, 128, 64],
         'weight_decay': [0.1, 0.05, 0.01, 0.005],
         'batch_size': [64, 128]
     }
     record = {}
     r2_best = float('-inf')
     for i, param in enumerate(ParameterGrid(param_grid)):
-        print('Model {}'.format(i + 1))
+        print('Model-{}'.format(i + 1))
         print(param)
         for key, value in param.items():
             exec('args.{}={}'.format(key, value))
@@ -434,15 +534,14 @@ def main():
                                  X_train_3d[-args.num_val // args.y_rate:],
                                  y_train_std[-args.num_val // args.y_rate:],
                                  scaler,
-                                 mode='val',
-                                 figure=False)
+                                 mode='val')
         print('*' * 50)
-        print('*' * 50)
-        record.update({str(param): [r2_train[-1], r2_val[-1]]})
+        record.update({str(param): [list(r2_train[-1]), list(r2_val[-1])]})
         if sum(r2_val[-1]) > r2_best:
             r2_best = sum(r2_val[-1])
             param_best = param
-    print(record)
+    with open(args.path + 'record.json', 'w') as f:
+        json.dump(record, f)
     print(param_best)
 
     # retraining
@@ -451,13 +550,7 @@ def main():
     print('=' * 50)
     for key, value in param_best.items():
         exec('args.{}={}'.format(key, value))
-    train(X_train_3d,
-          y_train_std,
-          X_test_3d,
-          y_test,
-          scaler,
-          mode='test',
-          figure=True)
+    train(X_train_3d, y_train_std, X_test_3d, y_test, scaler, mode='test')
 
     # end
     pass
