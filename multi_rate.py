@@ -43,7 +43,7 @@ parser.add_argument('-y', type=list, default=[9, 21])
 parser.add_argument('-y_rate', type=int, default=20)
 
 # model parameters
-parser.add_argument('-model', type=str, default='L-MLP')
+parser.add_argument('-model', type=str, default='MLP')
 parser.add_argument('-multiplier', type=int, default=30)
 parser.add_argument('-dim_h', type=int, default=256)
 parser.add_argument('-lr', type=float, default=0.001)
@@ -202,9 +202,9 @@ class RNN(nn.Module):
         return torch.stack(y, dim=1)
 
 
-class CWRNN(nn.Module):
+class CW_RNN(nn.Module):
     def __init__(self, dim_x, multiplier, dim_h, dim_y):
-        super(CWRNN, self).__init__()
+        super(CW_RNN, self).__init__()
         self.dim_x = dim_x
         self.multiplier = multiplier
         self.dim_h1 = dim_x * multiplier
@@ -309,9 +309,9 @@ def train(X_train, y_train, X_test, y_test, scaler, mode):
         raise Exception('Wrong mode selection!')
 
     # model initialization
-    if args.model == 'CWRNN':
-        net = CWRNN(X_train.shape[-1], args.multiplier, args.dim_h,
-                    y_train.shape[-1]).cuda(args.gpu)
+    if args.model == 'CW-RNN':
+        net = CW_RNN(X_train.shape[-1], args.multiplier, args.dim_h,
+                     y_train.shape[-1]).cuda(args.gpu)
     elif args.model == 'RNN':
         net = RNN(X_train.shape[-1], args.multiplier, args.dim_h,
                   y_train.shape[-1]).cuda(args.gpu)
@@ -519,7 +519,8 @@ def main():
     param_grid = {
         'multiplier': [15, 30, 60],
         'dim_h': [256, 128, 64],
-        'weight_decay': [0.1, 0.05, 0.01, 0.005],
+        'lr': [0.01, 0.001, 0.0001],
+        'weight_decay': [0.5, 0.1, 0.05, 0.01, 0.005],
         'batch_size': [64, 128]
     }
     record = {}
@@ -540,6 +541,7 @@ def main():
         if sum(r2_val[-1]) > r2_best:
             r2_best = sum(r2_val[-1])
             param_best = param
+    record.update({'best': param_best})
     with open(args.path + 'record.json', 'w') as f:
         json.dump(record, f)
     print(param_best)
