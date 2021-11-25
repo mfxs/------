@@ -2698,5 +2698,12 @@
             63.72,
             34.11
         ]
-    ]
+    ],
+    "best": {
+        "batch_size": 64,
+        "dim_h": 256,
+        "lr": 0.01,
+        "multiplier": 15,
+        "weight_decay": 0.5
+    }
 }
