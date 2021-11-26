@@ -44,8 +44,8 @@ parser.add_argument('-y_rate', type=int, default=20)
 
 # model parameters
 parser.add_argument('-model', type=str, default='MLP')
-parser.add_argument('-multiplier', type=int, default=30)
-parser.add_argument('-dim_h', type=int, default=256)
+parser.add_argument('-multiplier', type=int, default=15)
+parser.add_argument('-dim_h', type=int, default=128)
 parser.add_argument('-lr', type=float, default=0.001)
 parser.add_argument('-weight_decay', type=float, default=0.1)
 parser.add_argument('-step_size', type=int, default=50)
@@ -55,27 +55,31 @@ parser.add_argument('-epoch2', type=int, default=400)
 parser.add_argument('-batch_size', type=int, default=64)
 parser.add_argument('-report_freq', type=int, default=10)
 parser.add_argument('-test_freq', type=int, default=20)
+parser.add_argument('-test_mode', type=str, default='max_period')
 
 # other parameters
 parser.add_argument('-path', type=str, default='multi_rate/')
 parser.add_argument('-figsize', type=tuple, default=(10, 10))
 parser.add_argument('-dpi', type=int, default=150)
-parser.add_argument('-seed', type=int, default=123)
+parser.add_argument('-seed', type=int, default=12345)
 parser.add_argument('-gpu', type=int, default=1)
+parser.add_argument('-hpo', type=bool, default=True)
 
 args = parser.parse_args()
 
 
 def data_generation(data):
+    data_new = data.copy()
     for i in range(args.num_sample):
         if (i + 1) % args.x1_rate != 0:
-            data[i, args.x1] = args.miss_value
+            data_new[i, args.x1] = args.miss_value
         if (i + 1) % args.x2_rate != 0:
-            data[i, args.x2] = args.miss_value
+            data_new[i, args.x2] = args.miss_value
         if (i + 1) % args.x3_rate != 0:
-            data[i, args.x3] = args.miss_value
+            data_new[i, args.x3] = args.miss_value
         if (i + 1) % args.y_rate != 0:
-            data[i, args.y] = args.miss_value
+            data_new[i, args.y] = args.miss_value
+    return data_new
 
 
 def data_normalization(X_train, X_test):
@@ -134,7 +138,7 @@ class MLP(nn.Module):
                               nn.Linear(self.dim_h1, self.dim_h2), nn.ReLU(),
                               nn.Linear(self.dim_h2, 1)))
 
-    def forward(self, x):
+    def forward(self, x, output=None):
         y = []
         for i in range(self.dim_y):
             y.append(self.mlp[i](x[:, -1]).squeeze())
@@ -158,7 +162,7 @@ class L_MLP(nn.Module):
                               nn.Linear(self.dim_h1, self.dim_h2), nn.ReLU(),
                               nn.Linear(self.dim_h2, 1)))
 
-    def forward(self, x):
+    def forward(self, x, output=None):
         y = []
         x_lift = torch.cat([
             x[:,
@@ -194,7 +198,7 @@ class RNN(nn.Module):
                 nn.Sequential(nn.Linear(self.dim_h1, self.dim_h2), nn.ReLU(),
                               nn.Linear(self.dim_h2, 1)))
 
-    def forward(self, x):
+    def forward(self, x, output=None):
         y = []
         for i in range(self.dim_y):
             _, h = self.rnn[i](x)
@@ -226,9 +230,10 @@ class CW_RNN(nn.Module):
                               nn.Linear(self.dim_h2, 1)))
         self.reset()
 
-    def forward(self, x):
-        y = []
+    def forward(self, x, output='max_period'):
+        y_list = []
         for i in range(self.dim_y):
+            y = []
             h1 = torch.zeros(x.shape[0],
                              len(args.x1) * self.multiplier).cuda(args.gpu)
             h2 = torch.zeros(x.shape[0],
@@ -282,9 +287,17 @@ class CW_RNN(nn.Module):
                                      [:len(args.x1), :h1.shape[1]]) +
                         torch.matmul(h, self.w_h[i][:, :h1.shape[1]]) +
                         self.b[i][:h1.shape[1]])
-
-            y.append(self.mlp[i](torch.cat((h1, h2, h3), dim=1)).squeeze())
-        return torch.stack(y, dim=1)
+                if output == 'min_period':
+                    y.append(self.mlp[i](torch.cat((h1, h2, h3),
+                                                   dim=1)).squeeze())
+            if output == 'min_period':
+                y_list.append(torch.stack(y, dim=1).reshape(-1))
+            elif output == 'max_period':
+                y_list.append(self.mlp[i](torch.cat((h1, h2, h3),
+                                                    dim=1)).squeeze())
+            else:
+                raise Exception('Wrong mode selection!')
+        return torch.stack(y_list, dim=1)
 
     def reset(self):
         std = 1. / math.sqrt(self.dim_h1)
@@ -365,7 +378,8 @@ def train(X_train, y_train, X_test, y_test, scaler, mode):
                 y_fit = scaler.inverse_transform(
                     net(dataset_train.X).cpu().numpy())
                 y_pred = scaler.inverse_transform(
-                    net(dataset_test.X).cpu().numpy())
+                    net(dataset_test.X, args.test_mode
+                        if mode == 'test' else 'max_period').cpu().numpy())
             r2_train = [
                 round(100 * _, 2)
                 for _ in r2_score(y_train_raw, y_fit, multioutput='raw_values')
@@ -486,12 +500,13 @@ def main():
     data = data.values[args.skiprows:args.skiprows + args.num_sample]
 
     # data generation
-    data_generation(data)
+    data_new = data_generation(data)
 
     # data split
-    X, y = data[:, args.x1 + args.x2 + args.x3], data[:, args.y]
+    X, y = data_new[:, args.x1 + args.x2 + args.x3], data_new[:, args.y]
     X_train, y_train = X[:args.num_train], y[:args.num_train]
     X_test, y_test = X[args.num_train:], y[args.num_train:]
+    y_test_raw = data[args.num_train:, args.y]
 
     # data normalization
     X_train_std, X_test_std = data_normalization(X_train, X_test)
@@ -513,46 +528,53 @@ def main():
     X_test_3d = np.stack(X_test_3d)
 
     # model selection
-    print('=' * 50)
-    print('Model selection')
-    print('=' * 50)
-    param_grid = {
-        'multiplier': [15, 30, 60],
-        'dim_h': [256, 128, 64],
-        'lr': [0.01, 0.001, 0.0001],
-        'weight_decay': [0.5, 0.1, 0.05, 0.01, 0.005],
-        'batch_size': [64, 128]
-    }
-    record = {}
-    r2_best = float('-inf')
-    for i, param in enumerate(ParameterGrid(param_grid)):
-        print('Model-{}'.format(i + 1))
-        print(param)
-        for key, value in param.items():
+    if args.hpo:
+        print('=' * 50)
+        print('Model selection')
+        print('=' * 50)
+        param_grid = {
+            'multiplier': [15, 30, 60],
+            'dim_h': [256, 128, 64],
+            # 'lr': [0.01, 0.001, 0.0001],
+            'weight_decay': [0.1, 0.05, 0.01, 0.005],
+            'batch_size': [64, 128]
+        }
+        record = {}
+        r2_best = float('-inf')
+        num_val = args.num_val // args.y_rate
+        for i, param in enumerate(ParameterGrid(param_grid)):
+            print('Model-{}'.format(i + 1))
+            print(param)
+            for key, value in param.items():
+                exec('args.{}={}'.format(key, value))
+            r2_train, r2_val = train(X_train_3d[:-num_val],
+                                     y_train_std[:-num_val],
+                                     X_train_3d[-num_val:],
+                                     y_train_std[-num_val:],
+                                     scaler,
+                                     mode='val')
+            print('*' * 50)
+            record.update({str(param): [list(r2_train[-1]), list(r2_val[-1])]})
+            if sum(r2_val[-1]) > r2_best:
+                r2_best = sum(r2_val[-1])
+                param_best = param
+        record.update({'best': param_best})
+        for key, value in param_best.items():
             exec('args.{}={}'.format(key, value))
-        r2_train, r2_val = train(X_train_3d[:-args.num_val // args.y_rate],
-                                 y_train_std[:-args.num_val // args.y_rate],
-                                 X_train_3d[-args.num_val // args.y_rate:],
-                                 y_train_std[-args.num_val // args.y_rate:],
-                                 scaler,
-                                 mode='val')
-        print('*' * 50)
-        record.update({str(param): [list(r2_train[-1]), list(r2_val[-1])]})
-        if sum(r2_val[-1]) > r2_best:
-            r2_best = sum(r2_val[-1])
-            param_best = param
-    record.update({'best': param_best})
-    with open(args.path + 'record.json', 'w') as f:
-        json.dump(record, f)
-    print(param_best)
+        with open(args.path + 'record.json', 'w') as f:
+            json.dump(record, f)
+        print(param_best)
 
     # retraining
     print('=' * 50)
     print('Model Retraining')
     print('=' * 50)
-    for key, value in param_best.items():
-        exec('args.{}={}'.format(key, value))
-    train(X_train_3d, y_train_std, X_test_3d, y_test, scaler, mode='test')
+    train(X_train_3d,
+          y_train_std,
+          X_test_3d,
+          y_test if args.test_mode == 'max_period' else y_test_raw,
+          scaler,
+          mode='test')
 
     # end
     pass
