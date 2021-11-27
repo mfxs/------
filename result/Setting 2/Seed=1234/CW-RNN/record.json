@@ -1,0 +1,2709 @@
+{
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.5}": [
+        [
+            64.23,
+            90.84
+        ],
+        [
+            -2.22,
+            47.77
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.1}": [
+        [
+            67.51,
+            91.59
+        ],
+        [
+            -123.38,
+            15.09
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.05}": [
+        [
+            79.25,
+            91.84
+        ],
+        [
+            47.89,
+            13.1
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.01}": [
+        [
+            82.33,
+            94.29
+        ],
+        [
+            30.46,
+            -0.89
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.005}": [
+        [
+            72.99,
+            91.46
+        ],
+        [
+            20.33,
+            6.44
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.5}": [
+        [
+            62.21,
+            88.78
+        ],
+        [
+            -4.58,
+            60.35
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.1}": [
+        [
+            64.69,
+            88.96
+        ],
+        [
+            -97.46,
+            47.89
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.05}": [
+        [
+            59.14,
+            71.82
+        ],
+        [
+            -33.71,
+            51.54
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.01}": [
+        [
+            53.61,
+            90.46
+        ],
+        [
+            -234.59,
+            -38.69
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.005}": [
+        [
+            2.22,
+            86.31
+        ],
+        [
+            -74.14,
+            56.06
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.5}": [
+        [
+            27.53,
+            80.19
+        ],
+        [
+            -259.9,
+            52.93
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.1}": [
+        [
+            39.47,
+            86.63
+        ],
+        [
+            -185.65,
+            -16.68
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.05}": [
+        [
+            -88.08,
+            81.29
+        ],
+        [
+            -645.12,
+            41.9
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.01}": [
+        [
+            66.97,
+            24.79
+        ],
+        [
+            -8.26,
+            -51.9
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.005}": [
+        [
+            -29.7,
+            -1.83
+        ],
+        [
+            -240.84,
+            -308.51
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.5}": [
+        [
+            88.39,
+            95.13
+        ],
+        [
+            26.2,
+            45.96
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.1}": [
+        [
+            94.9,
+            97.29
+        ],
+        [
+            21.29,
+            52.4
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.05}": [
+        [
+            96.89,
+            97.68
+        ],
+        [
+            55.57,
+            36.08
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.01}": [
+        [
+            98.29,
+            98.52
+        ],
+        [
+            62.3,
+            28.91
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.005}": [
+        [
+            98.34,
+            98.28
+        ],
+        [
+            57.93,
+            46.31
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.5}": [
+        [
+            90.47,
+            95.06
+        ],
+        [
+            52.54,
+            49.92
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.1}": [
+        [
+            95.69,
+            97.15
+        ],
+        [
+            20.88,
+            26.18
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.05}": [
+        [
+            97.49,
+            97.62
+        ],
+        [
+            57.19,
+            41.71
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.01}": [
+        [
+            98.03,
+            98.18
+        ],
+        [
+            59.46,
+            44.73
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.005}": [
+        [
+            98.28,
+            98.23
+        ],
+        [
+            53.38,
+            43.98
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.5}": [
+        [
+            88.77,
+            94.75
+        ],
+        [
+            54.96,
+            54.05
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.1}": [
+        [
+            89.6,
+            97.13
+        ],
+        [
+            57.26,
+            58.9
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.05}": [
+        [
+            97.0,
+            97.29
+        ],
+        [
+            47.48,
+            50.78
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.01}": [
+        [
+            93.35,
+            98.26
+        ],
+        [
+            59.53,
+            28.36
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.005}": [
+        [
+            98.4,
+            97.34
+        ],
+        [
+            55.69,
+            43.2
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.5}": [
+        [
+            80.53,
+            93.57
+        ],
+        [
+            60.63,
+            49.12
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.1}": [
+        [
+            92.83,
+            96.23
+        ],
+        [
+            34.33,
+            47.24
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.05}": [
+        [
+            93.96,
+            97.21
+        ],
+        [
+            51.57,
+            40.75
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.01}": [
+        [
+            95.13,
+            97.48
+        ],
+        [
+            63.9,
+            45.82
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.005}": [
+        [
+            94.58,
+            97.37
+        ],
+        [
+            58.39,
+            32.99
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.5}": [
+        [
+            88.99,
+            94.13
+        ],
+        [
+            36.17,
+            48.93
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.1}": [
+        [
+            93.39,
+            96.8
+        ],
+        [
+            48.44,
+            45.06
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.05}": [
+        [
+            95.12,
+            97.38
+        ],
+        [
+            40.64,
+            25.18
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.01}": [
+        [
+            95.13,
+            97.67
+        ],
+        [
+            63.9,
+            34.76
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.005}": [
+        [
+            97.18,
+            97.93
+        ],
+        [
+            65.14,
+            46.75
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.5}": [
+        [
+            89.32,
+            94.18
+        ],
+        [
+            35.76,
+            51.48
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.1}": [
+        [
+            93.83,
+            97.23
+        ],
+        [
+            43.83,
+            42.63
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.05}": [
+        [
+            94.97,
+            97.65
+        ],
+        [
+            50.22,
+            34.95
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.01}": [
+        [
+            96.74,
+            98.04
+        ],
+        [
+            63.47,
+            36.43
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.005}": [
+        [
+            97.13,
+            97.93
+        ],
+        [
+            62.27,
+            35.62
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.5}": [
+        [
+            88.81,
+            84.81
+        ],
+        [
+            55.34,
+            39.98
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.1}": [
+        [
+            76.02,
+            93.7
+        ],
+        [
+            36.46,
+            52.85
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.05}": [
+        [
+            79.4,
+            93.6
+        ],
+        [
+            41.27,
+            37.88
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.01}": [
+        [
+            61.93,
+            94.24
+        ],
+        [
+            -161.62,
+            -6.64
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.005}": [
+        [
+            74.75,
+            92.71
+        ],
+        [
+            -84.01,
+            62.08
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.5}": [
+        [
+            54.56,
+            86.14
+        ],
+        [
+            -136.26,
+            52.03
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.1}": [
+        [
+            64.45,
+            82.88
+        ],
+        [
+            7.18,
+            -12.4
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.05}": [
+        [
+            51.31,
+            88.91
+        ],
+        [
+            3.9,
+            11.6
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.01}": [
+        [
+            64.47,
+            87.26
+        ],
+        [
+            -215.08,
+            44.29
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.005}": [
+        [
+            53.07,
+            91.71
+        ],
+        [
+            -59.18,
+            51.67
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.5}": [
+        [
+            27.55,
+            55.47
+        ],
+        [
+            -64.09,
+            -10.86
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.1}": [
+        [
+            70.61,
+            83.43
+        ],
+        [
+            -13.89,
+            57.0
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.05}": [
+        [
+            56.5,
+            24.92
+        ],
+        [
+            -66.22,
+            -340.92
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.01}": [
+        [
+            33.45,
+            80.93
+        ],
+        [
+            -136.26,
+            47.69
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.005}": [
+        [
+            65.96,
+            93.12
+        ],
+        [
+            7.54,
+            65.54
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.5}": [
+        [
+            88.94,
+            95.03
+        ],
+        [
+            65.78,
+            48.05
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.1}": [
+        [
+            95.53,
+            97.33
+        ],
+        [
+            53.41,
+            46.08
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.05}": [
+        [
+            97.59,
+            97.69
+        ],
+        [
+            58.78,
+            46.58
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.01}": [
+        [
+            98.09,
+            97.72
+        ],
+        [
+            59.01,
+            -19.62
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.005}": [
+        [
+            96.56,
+            98.49
+        ],
+        [
+            53.85,
+            23.13
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.5}": [
+        [
+            88.72,
+            94.97
+        ],
+        [
+            42.28,
+            50.95
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.1}": [
+        [
+            94.61,
+            97.18
+        ],
+        [
+            57.4,
+            51.63
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.05}": [
+        [
+            96.95,
+            97.61
+        ],
+        [
+            38.19,
+            27.2
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.01}": [
+        [
+            97.27,
+            98.09
+        ],
+        [
+            47.53,
+            36.13
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.005}": [
+        [
+            98.4,
+            98.53
+        ],
+        [
+            58.27,
+            17.2
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.5}": [
+        [
+            90.15,
+            94.49
+        ],
+        [
+            42.01,
+            43.03
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.1}": [
+        [
+            87.44,
+            97.29
+        ],
+        [
+            47.27,
+            25.3
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.05}": [
+        [
+            97.14,
+            97.68
+        ],
+        [
+            59.7,
+            44.59
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.01}": [
+        [
+            96.42,
+            98.46
+        ],
+        [
+            21.39,
+            29.39
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.005}": [
+        [
+            97.44,
+            97.61
+        ],
+        [
+            58.9,
+            49.71
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.5}": [
+        [
+            78.84,
+            93.31
+        ],
+        [
+            55.57,
+            48.03
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.1}": [
+        [
+            91.72,
+            96.1
+        ],
+        [
+            24.11,
+            54.83
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.05}": [
+        [
+            93.41,
+            96.96
+        ],
+        [
+            46.1,
+            44.42
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.01}": [
+        [
+            93.46,
+            97.29
+        ],
+        [
+            58.11,
+            26.38
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.005}": [
+        [
+            93.56,
+            97.27
+        ],
+        [
+            43.16,
+            40.86
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.5}": [
+        [
+            88.9,
+            93.9
+        ],
+        [
+            38.98,
+            51.96
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.1}": [
+        [
+            93.21,
+            96.9
+        ],
+        [
+            49.84,
+            36.51
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.05}": [
+        [
+            94.01,
+            97.43
+        ],
+        [
+            57.13,
+            36.72
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.01}": [
+        [
+            96.02,
+            97.62
+        ],
+        [
+            63.08,
+            33.94
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.005}": [
+        [
+            95.94,
+            97.75
+        ],
+        [
+            62.73,
+            40.8
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.5}": [
+        [
+            89.71,
+            94.24
+        ],
+        [
+            36.37,
+            51.27
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.1}": [
+        [
+            92.73,
+            97.1
+        ],
+        [
+            45.37,
+            41.47
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.05}": [
+        [
+            94.41,
+            97.5
+        ],
+        [
+            62.75,
+            38.18
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.01}": [
+        [
+            97.18,
+            97.93
+        ],
+        [
+            62.03,
+            24.66
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.005}": [
+        [
+            97.39,
+            97.72
+        ],
+        [
+            53.63,
+            15.41
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.5}": [
+        [
+            87.45,
+            93.93
+        ],
+        [
+            68.34,
+            55.0
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.1}": [
+        [
+            74.99,
+            94.77
+        ],
+        [
+            38.96,
+            20.35
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.05}": [
+        [
+            71.26,
+            -0.0
+        ],
+        [
+            25.62,
+            -212.23
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.01}": [
+        [
+            80.18,
+            -0.0
+        ],
+        [
+            61.47,
+            -211.35
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.005}": [
+        [
+            80.02,
+            95.66
+        ],
+        [
+            47.59,
+            38.49
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.5}": [
+        [
+            79.97,
+            93.97
+        ],
+        [
+            46.73,
+            27.88
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.1}": [
+        [
+            51.34,
+            92.18
+        ],
+        [
+            -20.38,
+            28.88
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.05}": [
+        [
+            68.75,
+            89.95
+        ],
+        [
+            7.29,
+            27.12
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.01}": [
+        [
+            60.25,
+            84.93
+        ],
+        [
+            -157.19,
+            59.24
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.005}": [
+        [
+            73.27,
+            88.71
+        ],
+        [
+            18.13,
+            19.5
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.5}": [
+        [
+            29.87,
+            66.61
+        ],
+        [
+            -206.77,
+            -152.15
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.1}": [
+        [
+            67.5,
+            81.84
+        ],
+        [
+            28.21,
+            -28.13
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.05}": [
+        [
+            61.37,
+            56.14
+        ],
+        [
+            -10.67,
+            13.3
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.01}": [
+        [
+            58.51,
+            74.78
+        ],
+        [
+            -155.01,
+            40.05
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.005}": [
+        [
+            18.76,
+            63.64
+        ],
+        [
+            -77.01,
+            -8.94
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.5}": [
+        [
+            90.48,
+            95.13
+        ],
+        [
+            43.59,
+            49.34
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.1}": [
+        [
+            94.82,
+            97.14
+        ],
+        [
+            35.16,
+            49.57
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.05}": [
+        [
+            95.65,
+            97.65
+        ],
+        [
+            46.42,
+            47.12
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.01}": [
+        [
+            98.05,
+            97.99
+        ],
+        [
+            54.23,
+            48.24
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.005}": [
+        [
+            98.04,
+            98.0
+        ],
+        [
+            62.96,
+            43.86
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.5}": [
+        [
+            89.5,
+            94.8
+        ],
+        [
+            42.61,
+            49.96
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.1}": [
+        [
+            94.5,
+            97.18
+        ],
+        [
+            14.4,
+            56.15
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.05}": [
+        [
+            95.79,
+            97.64
+        ],
+        [
+            -5.92,
+            44.33
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.01}": [
+        [
+            98.23,
+            97.71
+        ],
+        [
+            56.18,
+            13.31
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.005}": [
+        [
+            98.16,
+            98.31
+        ],
+        [
+            46.86,
+            40.58
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.5}": [
+        [
+            89.66,
+            94.68
+        ],
+        [
+            56.5,
+            47.17
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.1}": [
+        [
+            92.39,
+            97.22
+        ],
+        [
+            65.79,
+            25.78
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.05}": [
+        [
+            95.02,
+            97.26
+        ],
+        [
+            26.18,
+            61.27
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.01}": [
+        [
+            97.56,
+            98.03
+        ],
+        [
+            60.33,
+            41.64
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.005}": [
+        [
+            97.31,
+            98.14
+        ],
+        [
+            44.64,
+            24.79
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.5}": [
+        [
+            80.03,
+            93.43
+        ],
+        [
+            58.12,
+            50.22
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.1}": [
+        [
+            91.71,
+            96.04
+        ],
+        [
+            44.29,
+            50.65
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.05}": [
+        [
+            91.51,
+            96.46
+        ],
+        [
+            44.09,
+            57.11
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.01}": [
+        [
+            92.48,
+            96.77
+        ],
+        [
+            54.24,
+            43.25
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.005}": [
+        [
+            92.94,
+            97.1
+        ],
+        [
+            54.09,
+            47.07
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.5}": [
+        [
+            87.45,
+            94.1
+        ],
+        [
+            59.9,
+            51.83
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.1}": [
+        [
+            91.71,
+            96.62
+        ],
+        [
+            49.58,
+            35.35
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.05}": [
+        [
+            93.07,
+            96.97
+        ],
+        [
+            58.48,
+            37.22
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.01}": [
+        [
+            94.73,
+            97.61
+        ],
+        [
+            60.63,
+            20.57
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.005}": [
+        [
+            95.29,
+            97.66
+        ],
+        [
+            56.01,
+            17.33
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.5}": [
+        [
+            89.71,
+            94.13
+        ],
+        [
+            48.78,
+            52.58
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.1}": [
+        [
+            92.7,
+            96.78
+        ],
+        [
+            56.9,
+            45.35
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.05}": [
+        [
+            94.41,
+            97.47
+        ],
+        [
+            30.42,
+            28.02
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.01}": [
+        [
+            96.03,
+            97.65
+        ],
+        [
+            55.72,
+            26.05
+        ]
+    ],
+    "{'batch_size': 64, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.005}": [
+        [
+            95.82,
+            97.34
+        ],
+        [
+            57.98,
+            20.65
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.5}": [
+        [
+            36.37,
+            88.21
+        ],
+        [
+            -204.72,
+            32.37
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.1}": [
+        [
+            66.91,
+            90.19
+        ],
+        [
+            -23.69,
+            40.2
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.05}": [
+        [
+            39.87,
+            80.72
+        ],
+        [
+            -170.87,
+            42.53
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.01}": [
+        [
+            65.46,
+            89.27
+        ],
+        [
+            -22.92,
+            31.97
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.005}": [
+        [
+            63.16,
+            91.91
+        ],
+        [
+            -50.94,
+            51.42
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.5}": [
+        [
+            37.1,
+            39.78
+        ],
+        [
+            -20.36,
+            -309.04
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.1}": [
+        [
+            35.97,
+            77.01
+        ],
+        [
+            -98.83,
+            51.46
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.05}": [
+        [
+            1.8,
+            73.91
+        ],
+        [
+            -52.13,
+            34.66
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.01}": [
+        [
+            41.96,
+            70.47
+        ],
+        [
+            -162.72,
+            47.28
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.005}": [
+        [
+            -0.0,
+            74.75
+        ],
+        [
+            -48.21,
+            42.92
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.5}": [
+        [
+            16.4,
+            54.47
+        ],
+        [
+            -207.1,
+            -61.63
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.1}": [
+        [
+            59.74,
+            29.71
+        ],
+        [
+            -96.11,
+            -290.06
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.05}": [
+        [
+            53.38,
+            78.84
+        ],
+        [
+            -45.23,
+            28.82
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.01}": [
+        [
+            0.18,
+            -457.29
+        ],
+        [
+            -48.73,
+            -3900.17
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.005}": [
+        [
+            22.76,
+            5.71
+        ],
+        [
+            -104.46,
+            -180.82
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.5}": [
+        [
+            90.17,
+            95.7
+        ],
+        [
+            45.54,
+            53.19
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.1}": [
+        [
+            95.52,
+            97.36
+        ],
+        [
+            50.98,
+            42.5
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.05}": [
+        [
+            96.3,
+            97.77
+        ],
+        [
+            43.84,
+            37.29
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.01}": [
+        [
+            96.95,
+            98.37
+        ],
+        [
+            61.14,
+            26.0
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.005}": [
+        [
+            97.51,
+            98.2
+        ],
+        [
+            62.0,
+            41.18
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.5}": [
+        [
+            89.51,
+            95.66
+        ],
+        [
+            41.29,
+            55.62
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.1}": [
+        [
+            94.02,
+            97.31
+        ],
+        [
+            56.37,
+            40.42
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.05}": [
+        [
+            94.4,
+            97.52
+        ],
+        [
+            63.25,
+            39.44
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.01}": [
+        [
+            98.09,
+            98.21
+        ],
+        [
+            58.36,
+            21.09
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.005}": [
+        [
+            97.65,
+            97.76
+        ],
+        [
+            65.53,
+            36.73
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.5}": [
+        [
+            90.28,
+            95.4
+        ],
+        [
+            49.76,
+            48.44
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.1}": [
+        [
+            89.18,
+            97.07
+        ],
+        [
+            8.54,
+            60.59
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.05}": [
+        [
+            91.39,
+            95.36
+        ],
+        [
+            51.81,
+            50.06
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.01}": [
+        [
+            97.53,
+            96.83
+        ],
+        [
+            41.14,
+            46.41
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.005}": [
+        [
+            75.4,
+            98.16
+        ],
+        [
+            0.08,
+            38.64
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.5}": [
+        [
+            79.04,
+            93.87
+        ],
+        [
+            51.83,
+            45.31
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.1}": [
+        [
+            90.67,
+            95.33
+        ],
+        [
+            41.17,
+            54.63
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.05}": [
+        [
+            91.72,
+            95.44
+        ],
+        [
+            51.49,
+            60.56
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.01}": [
+        [
+            93.01,
+            95.48
+        ],
+        [
+            42.94,
+            59.33
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.005}": [
+        [
+            92.02,
+            96.05
+        ],
+        [
+            29.7,
+            59.29
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.5}": [
+        [
+            89.54,
+            94.14
+        ],
+        [
+            32.17,
+            55.3
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.1}": [
+        [
+            92.23,
+            96.08
+        ],
+        [
+            53.66,
+            52.87
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.05}": [
+        [
+            92.36,
+            96.82
+        ],
+        [
+            55.48,
+            46.23
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.01}": [
+        [
+            94.25,
+            96.86
+        ],
+        [
+            53.56,
+            53.24
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.005}": [
+        [
+            93.21,
+            96.38
+        ],
+        [
+            52.21,
+            50.73
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.5}": [
+        [
+            89.97,
+            94.74
+        ],
+        [
+            31.07,
+            53.78
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.1}": [
+        [
+            92.93,
+            96.69
+        ],
+        [
+            52.84,
+            42.94
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.05}": [
+        [
+            93.06,
+            97.09
+        ],
+        [
+            61.28,
+            32.67
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.01}": [
+        [
+            94.89,
+            97.71
+        ],
+        [
+            63.86,
+            29.55
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 256, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.005}": [
+        [
+            93.98,
+            97.59
+        ],
+        [
+            61.34,
+            26.09
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.5}": [
+        [
+            61.58,
+            89.61
+        ],
+        [
+            -52.64,
+            59.93
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.1}": [
+        [
+            64.37,
+            79.07
+        ],
+        [
+            -12.79,
+            51.63
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.05}": [
+        [
+            72.23,
+            85.38
+        ],
+        [
+            -210.25,
+            59.9
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.01}": [
+        [
+            70.23,
+            90.8
+        ],
+        [
+            18.0,
+            32.38
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.005}": [
+        [
+            56.83,
+            93.35
+        ],
+        [
+            -79.42,
+            65.97
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.5}": [
+        [
+            53.47,
+            83.86
+        ],
+        [
+            -96.96,
+            27.59
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.1}": [
+        [
+            43.25,
+            74.28
+        ],
+        [
+            -70.45,
+            15.26
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.05}": [
+        [
+            62.6,
+            80.26
+        ],
+        [
+            -179.86,
+            49.28
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.01}": [
+        [
+            7.79,
+            73.44
+        ],
+        [
+            -70.37,
+            32.78
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.005}": [
+        [
+            6.35,
+            72.44
+        ],
+        [
+            -62.21,
+            42.33
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.5}": [
+        [
+            40.67,
+            -0.81
+        ],
+        [
+            -85.08,
+            -230.29
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.1}": [
+        [
+            54.18,
+            41.5
+        ],
+        [
+            -127.01,
+            -70.3
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.05}": [
+        [
+            26.93,
+            86.97
+        ],
+        [
+            -120.89,
+            24.39
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.01}": [
+        [
+            13.65,
+            90.25
+        ],
+        [
+            -88.99,
+            54.02
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.005}": [
+        [
+            1.19,
+            24.04
+        ],
+        [
+            -50.43,
+            -122.93
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.5}": [
+        [
+            89.85,
+            95.45
+        ],
+        [
+            56.09,
+            55.06
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.1}": [
+        [
+            94.23,
+            97.43
+        ],
+        [
+            41.49,
+            42.41
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.05}": [
+        [
+            93.41,
+            97.58
+        ],
+        [
+            52.65,
+            42.68
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.01}": [
+        [
+            95.98,
+            97.7
+        ],
+        [
+            53.92,
+            39.74
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.005}": [
+        [
+            94.26,
+            97.72
+        ],
+        [
+            59.07,
+            37.48
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.5}": [
+        [
+            89.78,
+            95.55
+        ],
+        [
+            54.39,
+            50.5
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.1}": [
+        [
+            93.04,
+            97.22
+        ],
+        [
+            62.16,
+            45.62
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.05}": [
+        [
+            96.78,
+            97.44
+        ],
+        [
+            71.22,
+            42.22
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.01}": [
+        [
+            96.98,
+            97.39
+        ],
+        [
+            32.2,
+            32.53
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.005}": [
+        [
+            97.47,
+            97.62
+        ],
+        [
+            69.52,
+            40.22
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.5}": [
+        [
+            88.59,
+            95.36
+        ],
+        [
+            33.98,
+            49.2
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.1}": [
+        [
+            63.92,
+            84.33
+        ],
+        [
+            10.27,
+            49.35
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.05}": [
+        [
+            93.08,
+            97.53
+        ],
+        [
+            66.52,
+            40.75
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.01}": [
+        [
+            93.35,
+            96.18
+        ],
+        [
+            64.61,
+            49.8
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.005}": [
+        [
+            91.6,
+            97.4
+        ],
+        [
+            24.0,
+            26.62
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.5}": [
+        [
+            72.61,
+            93.01
+        ],
+        [
+            25.65,
+            39.95
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.1}": [
+        [
+            89.89,
+            94.44
+        ],
+        [
+            49.81,
+            57.97
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.05}": [
+        [
+            90.55,
+            95.21
+        ],
+        [
+            33.84,
+            58.71
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.01}": [
+        [
+            90.05,
+            95.3
+        ],
+        [
+            51.56,
+            58.68
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.005}": [
+        [
+            91.49,
+            94.75
+        ],
+        [
+            16.08,
+            48.76
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.5}": [
+        [
+            89.3,
+            94.02
+        ],
+        [
+            33.19,
+            49.69
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.1}": [
+        [
+            91.58,
+            96.15
+        ],
+        [
+            54.87,
+            53.12
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.05}": [
+        [
+            92.48,
+            96.98
+        ],
+        [
+            58.57,
+            32.54
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.01}": [
+        [
+            92.91,
+            96.92
+        ],
+        [
+            62.2,
+            52.56
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.005}": [
+        [
+            93.29,
+            97.32
+        ],
+        [
+            54.05,
+            33.12
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.5}": [
+        [
+            90.94,
+            94.82
+        ],
+        [
+            40.0,
+            56.04
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.1}": [
+        [
+            92.61,
+            96.89
+        ],
+        [
+            58.75,
+            33.2
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.05}": [
+        [
+            93.0,
+            97.05
+        ],
+        [
+            63.41,
+            39.19
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.01}": [
+        [
+            93.72,
+            97.26
+        ],
+        [
+            56.91,
+            30.88
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 128, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.005}": [
+        [
+            93.35,
+            97.41
+        ],
+        [
+            63.11,
+            26.94
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.5}": [
+        [
+            65.56,
+            90.57
+        ],
+        [
+            0.86,
+            24.02
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.1}": [
+        [
+            66.89,
+            90.62
+        ],
+        [
+            12.34,
+            33.17
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.05}": [
+        [
+            60.58,
+            94.43
+        ],
+        [
+            -160.82,
+            17.34
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.01}": [
+        [
+            72.9,
+            92.42
+        ],
+        [
+            20.68,
+            26.02
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.01, 'multiplier': 15, 'weight_decay': 0.005}": [
+        [
+            61.3,
+            90.28
+        ],
+        [
+            -19.11,
+            47.43
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.5}": [
+        [
+            38.98,
+            61.17
+        ],
+        [
+            -60.92,
+            1.41
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.1}": [
+        [
+            71.46,
+            83.31
+        ],
+        [
+            -86.56,
+            50.03
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.05}": [
+        [
+            66.09,
+            79.57
+        ],
+        [
+            -15.79,
+            46.97
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.01}": [
+        [
+            59.66,
+            75.46
+        ],
+        [
+            -26.65,
+            38.63
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.01, 'multiplier': 30, 'weight_decay': 0.005}": [
+        [
+            3.09,
+            81.25
+        ],
+        [
+            -53.28,
+            25.76
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.5}": [
+        [
+            57.57,
+            76.64
+        ],
+        [
+            -128.25,
+            33.56
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.1}": [
+        [
+            56.55,
+            78.38
+        ],
+        [
+            13.69,
+            53.62
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.05}": [
+        [
+            33.76,
+            80.01
+        ],
+        [
+            -120.0,
+            36.72
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.01}": [
+        [
+            47.1,
+            80.86
+        ],
+        [
+            -230.31,
+            58.87
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.01, 'multiplier': 60, 'weight_decay': 0.005}": [
+        [
+            0.59,
+            20.59
+        ],
+        [
+            -49.95,
+            -127.38
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.5}": [
+        [
+            90.22,
+            95.78
+        ],
+        [
+            44.61,
+            53.14
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.1}": [
+        [
+            92.06,
+            97.33
+        ],
+        [
+            48.85,
+            42.79
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.05}": [
+        [
+            94.35,
+            97.59
+        ],
+        [
+            24.09,
+            30.06
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.01}": [
+        [
+            93.73,
+            97.54
+        ],
+        [
+            66.41,
+            34.23
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.001, 'multiplier': 15, 'weight_decay': 0.005}": [
+        [
+            96.05,
+            97.85
+        ],
+        [
+            59.16,
+            39.34
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.5}": [
+        [
+            90.59,
+            95.63
+        ],
+        [
+            51.06,
+            52.95
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.1}": [
+        [
+            93.46,
+            97.09
+        ],
+        [
+            17.09,
+            45.49
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.05}": [
+        [
+            94.28,
+            97.31
+        ],
+        [
+            62.26,
+            42.88
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.01}": [
+        [
+            97.18,
+            97.82
+        ],
+        [
+            53.59,
+            31.48
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.001, 'multiplier': 30, 'weight_decay': 0.005}": [
+        [
+            94.48,
+            97.86
+        ],
+        [
+            56.73,
+            41.74
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.5}": [
+        [
+            88.38,
+            95.16
+        ],
+        [
+            37.97,
+            56.13
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.1}": [
+        [
+            91.8,
+            96.87
+        ],
+        [
+            60.0,
+            37.77
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.05}": [
+        [
+            91.76,
+            97.61
+        ],
+        [
+            46.84,
+            43.63
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.01}": [
+        [
+            71.92,
+            96.86
+        ],
+        [
+            -81.05,
+            30.24
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.001, 'multiplier': 60, 'weight_decay': 0.005}": [
+        [
+            91.41,
+            96.98
+        ],
+        [
+            -46.0,
+            28.36
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.5}": [
+        [
+            79.98,
+            93.41
+        ],
+        [
+            56.64,
+            47.78
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.1}": [
+        [
+            90.7,
+            94.24
+        ],
+        [
+            48.02,
+            54.87
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.05}": [
+        [
+            83.99,
+            95.42
+        ],
+        [
+            41.59,
+            60.82
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.01}": [
+        [
+            87.56,
+            94.63
+        ],
+        [
+            30.28,
+            51.58
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 15, 'weight_decay': 0.005}": [
+        [
+            89.62,
+            94.94
+        ],
+        [
+            37.34,
+            56.48
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.5}": [
+        [
+            88.4,
+            93.1
+        ],
+        [
+            8.85,
+            50.64
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.1}": [
+        [
+            92.22,
+            95.64
+        ],
+        [
+            37.54,
+            53.47
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.05}": [
+        [
+            92.24,
+            95.84
+        ],
+        [
+            52.0,
+            48.46
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.01}": [
+        [
+            92.53,
+            96.52
+        ],
+        [
+            48.06,
+            44.42
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 30, 'weight_decay': 0.005}": [
+        [
+            93.11,
+            97.07
+        ],
+        [
+            50.67,
+            38.36
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.5}": [
+        [
+            90.64,
+            94.78
+        ],
+        [
+            39.59,
+            54.97
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.1}": [
+        [
+            92.47,
+            96.54
+        ],
+        [
+            47.88,
+            43.45
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.05}": [
+        [
+            91.66,
+            97.36
+        ],
+        [
+            57.29,
+            40.35
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.01}": [
+        [
+            92.44,
+            97.55
+        ],
+        [
+            55.22,
+            27.39
+        ]
+    ],
+    "{'batch_size': 128, 'dim_h': 64, 'lr': 0.0001, 'multiplier': 60, 'weight_decay': 0.005}": [
+        [
+            95.13,
+            97.33
+        ],
+        [
+            59.09,
+            17.13
+        ]
+    ],
+    "best": {
+        "batch_size": 64,
+        "dim_h": 64,
+        "lr": 0.01,
+        "multiplier": 15,
+        "weight_decay": 0.5
+    }
+}

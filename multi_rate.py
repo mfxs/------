@@ -43,7 +43,7 @@ parser.add_argument('-y', type=list, default=[9, 21])
 parser.add_argument('-y_rate', type=int, default=20)
 
 # model parameters
-parser.add_argument('-model', type=str, default='MLP')
+parser.add_argument('-model', type=str, default='CW-RNN')
 parser.add_argument('-multiplier', type=int, default=15)
 parser.add_argument('-dim_h', type=int, default=128)
 parser.add_argument('-lr', type=float, default=0.001)
@@ -61,7 +61,7 @@ parser.add_argument('-test_mode', type=str, default='max_period')
 parser.add_argument('-path', type=str, default='multi_rate/')
 parser.add_argument('-figsize', type=tuple, default=(10, 10))
 parser.add_argument('-dpi', type=int, default=150)
-parser.add_argument('-seed', type=int, default=12345)
+parser.add_argument('-seed', type=int, default=123)
 parser.add_argument('-gpu', type=int, default=1)
 parser.add_argument('-hpo', type=bool, default=True)
 
@@ -535,7 +535,7 @@ def main():
         param_grid = {
             'multiplier': [15, 30, 60],
             'dim_h': [256, 128, 64],
-            # 'lr': [0.01, 0.001, 0.0001],
+            'lr': [0.001, 0.0001],
             'weight_decay': [0.1, 0.05, 0.01, 0.005],
             'batch_size': [64, 128]
         }
