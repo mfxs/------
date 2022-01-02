@@ -10,6 +10,7 @@ import torch.nn as nn
 import torch.optim as optim
 import matplotlib.pyplot as plt
 from torch.optim import lr_scheduler
+from scipy.interpolate import interp1d
 from sklearn.preprocessing import MinMaxScaler
 from torch.utils.data import Dataset, DataLoader
 from sklearn.model_selection import ParameterGrid
@@ -43,11 +44,12 @@ parser.add_argument('-y', type=list, default=[9, 21])
 parser.add_argument('-y_rate', type=int, default=20)
 
 # model parameters
-parser.add_argument('-model', type=str, default='MLP')
+parser.add_argument('-model', type=str, default='I-MLP')
+parser.add_argument('-kind', type=str, default='cubic')
 parser.add_argument('-multiplier', type=int, default=15)
-parser.add_argument('-dim_h', type=int, default=128)
+parser.add_argument('-dim_h', type=int, default=256)
 parser.add_argument('-lr', type=float, default=0.001)
-parser.add_argument('-weight_decay', type=float, default=0.1)
+parser.add_argument('-weight_decay', type=float, default=0.005)
 parser.add_argument('-step_size', type=int, default=50)
 parser.add_argument('-gamma', type=float, default=0.5)
 parser.add_argument('-epoch1', type=int, default=200)
@@ -61,7 +63,7 @@ parser.add_argument('-test_mode', type=str, default='max_period')
 parser.add_argument('-path', type=str, default='multi_rate/')
 parser.add_argument('-figsize', type=tuple, default=(10, 10))
 parser.add_argument('-dpi', type=int, default=150)
-parser.add_argument('-seed', type=int, default=123)
+parser.add_argument('-seed', type=int, default=12345)
 parser.add_argument('-gpu', type=int, default=0)
 parser.add_argument('-hpo', type=bool, default=True)
 
@@ -105,6 +107,26 @@ def data_normalization(X_train, X_test):
                                      min_value) / (max_value - min_value)
 
     return X_train_std, X_test_std
+
+
+def interpolation(X_train, y_train):
+    t = np.linspace(0, args.num_train - 1, args.num_train)
+    for i in range(X_train.shape[1]):
+        idx = X_train[:, i] != args.miss_value
+        if sum(~idx) != 0:
+            f = interp1d(t[idx],
+                         X_train[idx, i],
+                         kind=args.kind,
+                         fill_value='extrapolate')
+            X_train[~idx, i] = f(t[~idx])
+    for i in range(y_train.shape[1]):
+        idx = y_train[:, i] != args.miss_value
+        if sum(~idx) != 0:
+            f = interp1d(t[idx],
+                         y_train[idx, i],
+                         kind=args.kind,
+                         fill_value='extrapolate')
+            y_train[~idx, i] = f(t[~idx])
 
 
 class MyDataset(Dataset):
@@ -325,13 +347,13 @@ def train(X_train, y_train, X_test, y_test, scaler, mode):
     if args.model == 'CW-RNN':
         net = CW_RNN(X_train.shape[-1], args.multiplier, args.dim_h,
                      y_train.shape[-1]).cuda(args.gpu)
-    elif args.model == 'RNN':
+    elif args.model in ['RNN', 'I-RNN']:
         net = RNN(X_train.shape[-1], args.multiplier, args.dim_h,
                   y_train.shape[-1]).cuda(args.gpu)
     elif args.model == 'L-MLP':
         net = L_MLP(X_train.shape[-1], args.multiplier, args.dim_h,
                     y_train.shape[-1]).cuda(args.gpu)
-    elif args.model == 'MLP':
+    elif args.model in ['MLP', 'I-MLP']:
         net = MLP(X_train.shape[-1], args.multiplier, args.dim_h,
                   y_train.shape[-1]).cuda(args.gpu)
     else:
@@ -508,24 +530,65 @@ def main():
     X_test, y_test = X[args.num_train:], y[args.num_train:]
     y_test_raw = data[args.num_train:, args.y]
 
-    # data normalization
-    X_train_std, X_test_std = data_normalization(X_train, X_test)
-    y_train = y_train[[(_ + 1) * args.y_rate - 1
-                       for _ in range(y_train.shape[0] // args.y_rate)]]
-    y_test = y_test[[(_ + 1) * args.y_rate - 1
-                     for _ in range(y_test.shape[0] // args.y_rate)]]
-    scaler = MinMaxScaler().fit(y_train)
-    y_train_std = scaler.transform(y_train)
+    # data preprocessing
+    if args.model == 'I-MLP':
+        # interpolation
+        interpolation(X_train, y_train)
+        index = y_test[:, 0] != args.miss_value
+        X_test = X_test[index]
+        y_test = y_test[index]
 
-    # data rearrangement
-    X_train_3d = []
-    X_test_3d = []
-    for i in range(X_train_std.shape[0] // args.y_rate):
-        X_train_3d.append(X_train_std[i * args.y_rate:(i + 1) * args.y_rate])
-    for i in range(X_test_std.shape[0] // args.y_rate):
-        X_test_3d.append(X_test_std[i * args.y_rate:(i + 1) * args.y_rate])
-    X_train_3d = np.stack(X_train_3d)
-    X_test_3d = np.stack(X_test_3d)
+        # data normalization
+        scaler = MinMaxScaler().fit(X_train)
+        X_train = scaler.transform(X_train)
+        X_test = scaler.transform(X_test)
+        scaler = MinMaxScaler().fit(y_train)
+        y_train_std = scaler.transform(y_train)
+
+        # data rearrangement
+        X_train_3d = X_train[:, np.newaxis, :]
+        X_test_3d = X_test[:, np.newaxis, :]
+    elif args.model == 'I-RNN':
+        # interpolation
+        interpolation(X_train, y_train)
+
+        # data normalization
+        y_train = y_train[[(_ + 1) * args.y_rate - 1
+                           for _ in range(y_train.shape[0] // args.y_rate)]]
+        y_test = y_test[[(_ + 1) * args.y_rate - 1
+                         for _ in range(y_test.shape[0] // args.y_rate)]]
+        scaler = MinMaxScaler().fit(y_train)
+        y_train_std = scaler.transform(y_train)
+
+        # data rearrangement
+        X_train_3d = []
+        X_test_3d = []
+        for i in range(X_train.shape[0] // args.y_rate):
+            X_train_3d.append(X_train[i * args.y_rate:(i + 1) * args.y_rate])
+        for i in range(X_test.shape[0] // args.y_rate):
+            X_test_3d.append(X_test[i * args.y_rate:(i + 1) * args.y_rate])
+        X_train_3d = np.stack(X_train_3d)
+        X_test_3d = np.stack(X_test_3d)
+    else:
+        # data normalization
+        X_train_std, X_test_std = data_normalization(X_train, X_test)
+        y_train = y_train[[(_ + 1) * args.y_rate - 1
+                           for _ in range(y_train.shape[0] // args.y_rate)]]
+        y_test = y_test[[(_ + 1) * args.y_rate - 1
+                         for _ in range(y_test.shape[0] // args.y_rate)]]
+        scaler = MinMaxScaler().fit(y_train)
+        y_train_std = scaler.transform(y_train)
+
+        # data rearrangement
+        X_train_3d = []
+        X_test_3d = []
+        for i in range(X_train_std.shape[0] // args.y_rate):
+            X_train_3d.append(X_train_std[i * args.y_rate:(i + 1) *
+                                          args.y_rate])
+        for i in range(X_test_std.shape[0] // args.y_rate):
+            X_test_3d.append(X_test_std[i * args.y_rate:(i + 1) * args.y_rate])
+        X_train_3d = np.stack(X_train_3d)
+        X_test_3d = np.stack(X_test_3d)
 
     # model selection
     if args.hpo:
@@ -541,7 +604,10 @@ def main():
         }
         record = {}
         r2_best = float('-inf')
-        num_val = args.num_val // args.y_rate
+        if args.model == 'I-MLP':
+            num_val = args.num_val
+        else:
+            num_val = args.num_val // args.y_rate
         for i, param in enumerate(ParameterGrid(param_grid)):
             print('Model-{}'.format(i + 1))
             print(param)
