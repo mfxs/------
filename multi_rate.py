@@ -10,10 +10,10 @@ import torch.nn as nn
 import torch.optim as optim
 import matplotlib.pyplot as plt
 from torch.optim import lr_scheduler
-from scipy.interpolate import interp1d
 from sklearn.preprocessing import MinMaxScaler
 from torch.utils.data import Dataset, DataLoader
 from sklearn.model_selection import ParameterGrid
+from scipy.interpolate import interp1d, splrep, splev
 from sklearn.metrics import r2_score, mean_squared_error
 
 # parameter parser
@@ -46,13 +46,13 @@ parser.add_argument('-y_rate', type=int, default=20)
 # model parameters
 parser.add_argument('-model',
                     type=str,
-                    default='CW-RNN',
-                    help='MLP|I-MLP|L-MLP|RNN|CW-RNN')
+                    default='MCW-RNN',
+                    help='MLP|I-MLP|L-MLP|RNN|I-RNN|MCW-RNN')
 parser.add_argument('-kind', type=str, default='cubic')
-parser.add_argument('-multiplier', type=int, default=15)
+parser.add_argument('-multiplier', type=int, default=30)
 parser.add_argument('-dim_h', type=int, default=256)
 parser.add_argument('-lr', type=float, default=0.001)
-parser.add_argument('-weight_decay', type=float, default=0.005)
+parser.add_argument('-weight_decay', type=float, default=0.01)
 parser.add_argument('-step_size', type=int, default=50)
 parser.add_argument('-gamma', type=float, default=0.5)
 parser.add_argument('-epoch1', type=int, default=200)
@@ -60,7 +60,6 @@ parser.add_argument('-epoch2', type=int, default=400)
 parser.add_argument('-batch_size', type=int, default=64)
 parser.add_argument('-report_freq', type=int, default=10)
 parser.add_argument('-test_freq', type=int, default=20)
-parser.add_argument('-test_mode', type=str, default='max_period')
 
 # other parameters
 parser.add_argument('-path', type=str, default='multi_rate/')
@@ -87,6 +86,21 @@ def data_generation(data):
     return data_new
 
 
+def interpolation(data):
+    n = data.shape[0]
+    t = np.linspace(0, n - 1, n)
+    for i in range(data.shape[1]):
+        idx = data[:, i] != args.miss_value
+        if sum(~idx) != 0:
+            # tck = splrep(t[idx], data[idx, i], k=3, s=0)
+            # data[~idx, i] = splev(t[~idx], tck, der=0)
+            f = interp1d(t[idx],
+                         data[idx, i],
+                         kind=args.kind,
+                         fill_value='extrapolate')
+            data[~idx, i] = f(t[~idx])
+
+
 def data_normalization(X_train, X_test):
     X_train_std = X_train.copy()
     X_test_std = X_test.copy()
@@ -102,27 +116,6 @@ def data_normalization(X_train, X_test):
                                      min_value) / (max_value - min_value)
 
     return X_train_std, X_test_std
-
-
-def interpolation(X, y):
-    n = X.shape[0]
-    t = np.linspace(0, n - 1, n)
-    for i in range(X.shape[1]):
-        idx = X[:, i] != args.miss_value
-        if sum(~idx) != 0:
-            f = interp1d(t[idx],
-                         X[idx, i],
-                         kind=args.kind,
-                         fill_value='extrapolate')
-            X[~idx, i] = f(t[~idx])
-    for i in range(y.shape[1]):
-        idx = y[:, i] != args.miss_value
-        if sum(~idx) != 0:
-            f = interp1d(t[idx],
-                         y[idx, i],
-                         kind=args.kind,
-                         fill_value='extrapolate')
-            y[~idx, i] = f(t[~idx])
 
 
 class MyDataset(Dataset):
@@ -224,9 +217,9 @@ class RNN(nn.Module):
         return torch.stack(y, dim=1)
 
 
-class CW_RNN(nn.Module):
+class MCW_RNN(nn.Module):
     def __init__(self, dim_x, multiplier, dim_h, dim_y):
-        super(CW_RNN, self).__init__()
+        super(MCW_RNN, self).__init__()
         self.dim_x = dim_x
         self.multiplier = multiplier
         self.dim_h1 = dim_x * multiplier
@@ -325,7 +318,14 @@ class CW_RNN(nn.Module):
             self.b[i].data.uniform_(-std, std)
 
 
-def train(X_train, y_train, X_test, y_test, scaler, mode):
+def train(X_train,
+          y_train,
+          X_test,
+          y_test,
+          scaler,
+          mode,
+          X_test_best=None,
+          y_test_best=None):
     y_train_raw = scaler.inverse_transform(y_train)
 
     # mode selection
@@ -340,9 +340,9 @@ def train(X_train, y_train, X_test, y_test, scaler, mode):
         raise Exception('Wrong mode selection!')
 
     # model initialization
-    if args.model == 'CW-RNN':
-        net = CW_RNN(X_train.shape[-1], args.multiplier, args.dim_h,
-                     y_train.shape[-1]).cuda(args.gpu)
+    if args.model == 'MCW-RNN':
+        net = MCW_RNN(X_train.shape[-1], args.multiplier, args.dim_h,
+                      y_train.shape[-1]).cuda(args.gpu)
     elif args.model in ['RNN', 'I-RNN']:
         net = RNN(X_train.shape[-1], args.multiplier, args.dim_h,
                   y_train.shape[-1]).cuda(args.gpu)
@@ -396,8 +396,7 @@ def train(X_train, y_train, X_test, y_test, scaler, mode):
                 y_fit = scaler.inverse_transform(
                     net(dataset_train.X).cpu().numpy())
                 y_pred = scaler.inverse_transform(
-                    net(dataset_test.X, args.test_mode
-                        if mode == 'test' else 'max_period').cpu().numpy())
+                    net(dataset_test.X).cpu().numpy())
             r2_train = [
                 round(100 * _, 2)
                 for _ in r2_score(y_train_raw, y_fit, multioutput='raw_values')
@@ -429,6 +428,53 @@ def train(X_train, y_train, X_test, y_test, scaler, mode):
         plot_loss_acc(loss_hist, acc_train, acc_test)
         plot_prediction_curve(y_train_raw, y_fit, r2_train, rmse_train, y_test,
                               y_pred, r2_test, rmse_test)
+
+        if args.model == 'MCW-RNN':
+
+            # Performance on different time steps
+            with torch.no_grad():
+                y_pred = scaler.inverse_transform(
+                    net(dataset_test.X, 'min_period').cpu().numpy())
+            r2 = np.zeros((args.y_rate, len(args.y)))
+            rmse = np.zeros((args.y_rate, len(args.y)))
+            for i in range(args.y_rate):
+                idx = range(i, y_test_best.shape[0], args.y_rate)
+                r2[i] = 100 * r2_score(
+                    y_test_best[idx], y_pred[idx], multioutput='raw_values')
+                rmse[i] = np.sqrt(
+                    mean_squared_error(y_test_best[idx],
+                                       y_pred[idx],
+                                       multioutput='raw_values'))
+
+            # plot R2
+            plt.figure(figsize=args.figsize, dpi=args.dpi)
+            for i in range(len(args.y)):
+                plt.subplot(len(args.y), 1, i + 1)
+                plt.bar(range(1, args.y_rate + 1),
+                        r2[:, i],
+                        label='QV_{}'.format(i + 1))
+                plt.xlabel('Time step')
+                plt.ylabel('R2')
+                plt.grid()
+                plt.legend()
+                plt.title('R2 on different time steps (QV_{})'.format(i + 1))
+            plt.savefig(args.path + 'R2.png')
+            plt.close()
+
+            # plot RMSE
+            plt.figure(figsize=args.figsize, dpi=args.dpi)
+            for i in range(len(args.y)):
+                plt.subplot(len(args.y), 1, i + 1)
+                plt.bar(range(1, args.y_rate + 1),
+                        rmse[:, i],
+                        label='QV_{}'.format(i + 1))
+                plt.xlabel('Time step')
+                plt.ylabel('RMSE')
+                plt.grid()
+                plt.legend()
+                plt.title('RMSE on different time step (QV_{})'.format(i + 1))
+            plt.savefig(args.path + 'RMSE.png')
+            plt.close()
 
     return acc_train, acc_test
 
@@ -524,22 +570,22 @@ def main():
     X, y = data_new[:, args.x1 + args.x2 + args.x3], data_new[:, args.y]
     X_train, y_train = X[:args.num_train], y[:args.num_train]
     X_test, y_test = X[args.num_train:], y[args.num_train:]
-    y_test_raw = data[args.num_train:, args.y]
 
     # I-MLP
     if args.model == 'I-MLP':
         # interpolation
-        interpolation(X_train, y_train)
-        index = y_test[:, 0] != args.miss_value
-        X_test = X_test[index]
-        y_test = y_test[index]
+        interpolation(X_train)
+        interpolation(y_train)
+        idx = y_test[:, 0] != args.miss_value
+        X_test = X_test[idx]
+        y_test = y_test[idx]
 
         # data normalization
         scaler = MinMaxScaler().fit(X_train)
         X_train = scaler.transform(X_train)
         X_test = scaler.transform(X_test)
         scaler = MinMaxScaler().fit(y_train)
-        y_train_std = scaler.transform(y_train)
+        y_train = scaler.transform(y_train)
 
         # data rearrangement
         X_train_3d = X_train[:, np.newaxis, :]
@@ -548,15 +594,17 @@ def main():
     # I-RNN
     elif args.model == 'I-RNN':
         # interpolation
-        interpolation(X_train, y_train)
-        interpolation(X_test, y_test)
+        interpolation(X_train)
+        interpolation(y_train)
+        interpolation(X_test)
+        interpolation(y_test)
 
         # data normalization
         scaler = MinMaxScaler().fit(X_train)
         X_train = scaler.transform(X_train)
         X_test = scaler.transform(X_test)
         scaler = MinMaxScaler().fit(y_train)
-        y_train_std = scaler.transform(y_train)
+        y_train = scaler.transform(y_train)
 
         # data rearrangement
         X_train_3d = []
@@ -568,7 +616,6 @@ def main():
         X_train_3d = np.stack(X_train_3d)
         X_test_3d = np.stack(X_test_3d)
         y_train = y_train[args.y_rate - 1:]
-        y_train_std = y_train_std[args.y_rate - 1:]
         y_test = y_test[args.y_rate - 1:]
 
     # others
@@ -578,18 +625,23 @@ def main():
         y_train = y_train[y_train[:, 0] != args.miss_value]
         y_test = y_test[y_test[:, 0] != args.miss_value]
         scaler = MinMaxScaler().fit(y_train)
-        y_train_std = scaler.transform(y_train)
+        y_train = scaler.transform(y_train)
 
         # data rearrangement
         X_train_3d = []
         X_test_3d = []
+        X_test_3d_best = []
         for i in range(X_train_std.shape[0] // args.y_rate):
             X_train_3d.append(X_train_std[i * args.y_rate:(i + 1) *
                                           args.y_rate])
         for i in range(X_test_std.shape[0] // args.y_rate):
             X_test_3d.append(X_test_std[i * args.y_rate:(i + 1) * args.y_rate])
+        for i in range(X_test.shape[0] - args.y_rate + 1):
+            X_test_3d_best.append(X_test[i:i + args.y_rate])
         X_train_3d = np.stack(X_train_3d)
         X_test_3d = np.stack(X_test_3d)
+        X_test_3d_best = np.stack(X_test_3d_best)
+        y_test_best = data[args.num_train:, args.y]
 
     # model selection
     if args.hpo:
@@ -614,12 +666,9 @@ def main():
             print(param)
             for key, value in param.items():
                 exec('args.{}={}'.format(key, value))
-            r2_train, r2_val = train(X_train_3d[:-num_val],
-                                     y_train_std[:-num_val],
-                                     X_train_3d[-num_val:],
-                                     y_train_std[-num_val:],
-                                     scaler,
-                                     mode='val')
+            r2_train, r2_val = train(X_train_3d[:-num_val], y_train[:-num_val],
+                                     X_train_3d[-num_val:], y_train[-num_val:],
+                                     scaler, 'val')
             print('*' * 50)
             record.update({str(param): [list(r2_train[-1]), list(r2_val[-1])]})
             if sum(r2_val[-1]) > r2_best:
@@ -636,12 +685,11 @@ def main():
     print('=' * 50)
     print('Model Retraining')
     print('=' * 50)
-    train(X_train_3d,
-          y_train_std,
-          X_test_3d,
-          y_test if args.test_mode == 'max_period' else y_test_raw,
-          scaler,
-          mode='test')
+    if args.model == 'MCW-RNN':
+        train(X_train_3d, y_train, X_test_3d, y_test, scaler, 'test',
+              X_test_3d_best, y_test_best)
+    else:
+        train(X_train_3d, y_train, X_test_3d, y_test, scaler, 'test')
 
     # end
     pass
