@@ -1,4 +1,5 @@
 # package
+import os
 import math
 import time
 import json
@@ -63,6 +64,7 @@ parser.add_argument('-test_freq', type=int, default=20)
 
 # other parameters
 parser.add_argument('-path', type=str, default='multi_rate/')
+parser.add_argument('-tag', type=str, default='tag/')
 parser.add_argument('-figsize', type=tuple, default=(10, 10))
 parser.add_argument('-dpi', type=int, default=150)
 parser.add_argument('-seed', type=int, default=123)
@@ -458,7 +460,7 @@ def train(X_train,
                 plt.grid()
                 plt.legend()
                 plt.title('R2 on different time steps (QV_{})'.format(i + 1))
-            plt.savefig(args.path + 'R2.png')
+            plt.savefig(args.path + args.tag + 'R2.png')
             plt.close()
 
             # plot RMSE
@@ -473,7 +475,7 @@ def train(X_train,
                 plt.grid()
                 plt.legend()
                 plt.title('RMSE on different time step (QV_{})'.format(i + 1))
-            plt.savefig(args.path + 'RMSE.png')
+            plt.savefig(args.path + args.tag + 'RMSE.png')
             plt.close()
 
     return acc_train, acc_test
@@ -507,7 +509,7 @@ def plot_loss_acc(loss_hist, acc_train, acc_test):
     plt.grid()
     plt.legend()
     plt.title('Accuracy curve during training')
-    plt.savefig(args.path + 'Loss & Acc.png')
+    plt.savefig(args.path + args.tag + 'Loss & Acc.png')
     plt.close()
 
 
@@ -535,7 +537,7 @@ def plot_prediction_curve(y_train, y_fit, r2_train, rmse_train, y_test, y_pred,
         plt.title(
             'Prediction curve on test set (R2: {:.2f}%, RMSE: {:.3f})'.format(
                 r2_test[i], rmse_test[i]))
-        plt.savefig(args.path + 'QV_{}.png'.format(i + 1))
+        plt.savefig(args.path + args.tag + 'QV_{}.png'.format(i + 1))
         plt.close()
 
 
@@ -546,6 +548,10 @@ def main():
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
     torch.cuda.manual_seed_all(args.seed)
+
+    # create folder
+    if not os.path.exists(args.path + args.tag):
+        os.mkdir(args.path + args.tag)
 
     # import data
     data = pd.read_excel(args.path + 'coal_mill.xlsx',
@@ -559,7 +565,7 @@ def main():
     #     plt.xlabel('Sample')
     #     plt.ylabel('Value')
     #     plt.grid()
-    #     plt.savefig(args.path + columns[i] + '.png')
+    #     plt.savefig(args.path + args.tag + columns[i] + '.png')
     #     plt.close()
     data = data.values[args.skiprows:args.skiprows + args.num_sample]
 
@@ -677,7 +683,7 @@ def main():
         record.update({'best': param_best})
         for key, value in param_best.items():
             exec('args.{}={}'.format(key, value))
-        with open(args.path + 'record.json', 'w') as f:
+        with open(args.path + args.tag + 'record.json', 'w') as f:
             json.dump(record, f)
         print(param_best)
 
