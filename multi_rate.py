@@ -48,7 +48,7 @@ parser.add_argument('-y_rate', type=int, default=20)
 parser.add_argument('-model',
                     type=str,
                     default='MCW-RNN',
-                    help='MLP|I-MLP|L-MLP|RNN|I-RNN|MCW-RNN')
+                    help='D-MLP|U-MLP|L-MLP|D-RNN|U-RNN|Z-RNN|MCW-RNN')
 parser.add_argument('-kind', type=str, default='cubic')
 parser.add_argument('-multiplier', type=int, default=30)
 parser.add_argument('-dim_h', type=int, default=256)
@@ -345,13 +345,13 @@ def train(X_train,
     if args.model == 'MCW-RNN':
         net = MCW_RNN(X_train.shape[-1], args.multiplier, args.dim_h,
                       y_train.shape[-1]).cuda(args.gpu)
-    elif args.model in ['RNN', 'I-RNN']:
+    elif args.model in ['D-RNN', 'U-RNN', 'Z-RNN']:
         net = RNN(X_train.shape[-1], args.multiplier, args.dim_h,
                   y_train.shape[-1]).cuda(args.gpu)
     elif args.model == 'L-MLP':
         net = L_MLP(X_train.shape[-1], args.multiplier, args.dim_h,
                     y_train.shape[-1]).cuda(args.gpu)
-    elif args.model in ['MLP', 'I-MLP']:
+    elif args.model in ['D-MLP', 'U-MLP']:
         net = MLP(X_train.shape[-1], args.multiplier, args.dim_h,
                   y_train.shape[-1]).cuda(args.gpu)
     else:
@@ -577,8 +577,8 @@ def main():
     X_train, y_train = X[:args.num_train], y[:args.num_train]
     X_test, y_test = X[args.num_train:], y[args.num_train:]
 
-    # I-MLP
-    if args.model == 'I-MLP':
+    # U-MLP
+    if args.model == 'U-MLP':
         # interpolation
         interpolation(X_train)
         interpolation(y_train)
@@ -597,8 +597,8 @@ def main():
         X_train_3d = X_train[:, np.newaxis, :]
         X_test_3d = X_test[:, np.newaxis, :]
 
-    # I-RNN
-    elif args.model == 'I-RNN':
+    # U-RNN
+    elif args.model == 'U-RNN':
         # interpolation
         interpolation(X_train)
         interpolation(y_train)
@@ -663,7 +663,7 @@ def main():
         }
         record = {}
         r2_best = float('-inf')
-        if args.model in ['I-MLP', 'I-RNN']:
+        if args.model in ['U-MLP', 'U-RNN']:
             num_val = args.num_val
         else:
             num_val = args.num_val // args.y_rate
