@@ -603,7 +603,35 @@ def main():
         interpolation(X_train)
         interpolation(y_train)
         interpolation(X_test)
-        interpolation(y_test)
+        y_test = y_test[y_test[:, 0] != args.miss_value]
+
+        # data normalization
+        scaler = MinMaxScaler().fit(X_train)
+        X_train = scaler.transform(X_train)
+        X_test = scaler.transform(X_test)
+        scaler = MinMaxScaler().fit(y_train)
+        y_train = scaler.transform(y_train)
+
+        # data rearrangement
+        X_train_3d = []
+        X_test_3d = []
+        for i in range(X_train.shape[0] - args.y_rate + 1):
+            X_train_3d.append(X_train[i:i + args.y_rate])
+        for i in range(X_test.shape[0] // args.y_rate):
+            X_test_3d.append(X_test[i * args.y_rate:(i + 1) * args.y_rate])
+        X_train_3d = np.stack(X_train_3d)
+        X_test_3d = np.stack(X_test_3d)
+        y_train = y_train[args.y_rate - 1:]
+
+    # D-RNN
+    elif args.model == 'D-RNN':
+        # down sampling
+        idx = y_train[:, 0] != args.miss_value
+        X_train = X_train[idx]
+        y_train = y_train[idx]
+        idx = y_test[:, 0] != args.miss_value
+        X_test = X_test[idx]
+        y_test = y_test[idx]
 
         # data normalization
         scaler = MinMaxScaler().fit(X_train)
@@ -627,7 +655,7 @@ def main():
     # others
     else:
         # data normalization
-        X_train_std, X_test_std = data_normalization(X_train, X_test)
+        X_train, X_test = data_normalization(X_train, X_test)
         y_train = y_train[y_train[:, 0] != args.miss_value]
         y_test = y_test[y_test[:, 0] != args.miss_value]
         scaler = MinMaxScaler().fit(y_train)
@@ -637,11 +665,10 @@ def main():
         X_train_3d = []
         X_test_3d = []
         X_test_3d_best = []
-        for i in range(X_train_std.shape[0] // args.y_rate):
-            X_train_3d.append(X_train_std[i * args.y_rate:(i + 1) *
-                                          args.y_rate])
-        for i in range(X_test_std.shape[0] // args.y_rate):
-            X_test_3d.append(X_test_std[i * args.y_rate:(i + 1) * args.y_rate])
+        for i in range(X_train.shape[0] // args.y_rate):
+            X_train_3d.append(X_train[i * args.y_rate:(i + 1) * args.y_rate])
+        for i in range(X_test.shape[0] // args.y_rate):
+            X_test_3d.append(X_test[i * args.y_rate:(i + 1) * args.y_rate])
         for i in range(X_test.shape[0] - args.y_rate + 1):
             X_test_3d_best.append(X_test[i:i + args.y_rate])
         X_train_3d = np.stack(X_train_3d)
