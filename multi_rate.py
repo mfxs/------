@@ -50,10 +50,10 @@ parser.add_argument('-model',
                     default='MCW-RNN',
                     help='D-MLP|U-MLP|L-MLP|D-RNN|U-RNN|Z-RNN|MCW-RNN')
 parser.add_argument('-kind', type=str, default='cubic')
-parser.add_argument('-multiplier', type=int, default=30)
-parser.add_argument('-dim_h', type=int, default=256)
+parser.add_argument('-multiplier', type=int, default=15)
+parser.add_argument('-dim_h', type=int, default=128)
 parser.add_argument('-lr', type=float, default=0.001)
-parser.add_argument('-weight_decay', type=float, default=0.01)
+parser.add_argument('-weight_decay', type=float, default=0.1)
 parser.add_argument('-step_size', type=int, default=50)
 parser.add_argument('-gamma', type=float, default=0.5)
 parser.add_argument('-epoch1', type=int, default=200)
@@ -151,7 +151,7 @@ class MLP(nn.Module):
                               nn.Linear(self.dim_h1, self.dim_h2), nn.ReLU(),
                               nn.Linear(self.dim_h2, 1)))
 
-    def forward(self, x, output=None):
+    def forward(self, x):
         y = []
         for i in range(self.dim_y):
             y.append(self.mlp[i](x[:, -1]).squeeze())
@@ -175,7 +175,7 @@ class L_MLP(nn.Module):
                               nn.Linear(self.dim_h1, self.dim_h2), nn.ReLU(),
                               nn.Linear(self.dim_h2, 1)))
 
-    def forward(self, x, output=None):
+    def forward(self, x):
         y = []
         x_lift = torch.cat([
             x[:,
@@ -211,7 +211,7 @@ class RNN(nn.Module):
                 nn.Sequential(nn.Linear(self.dim_h1, self.dim_h2), nn.ReLU(),
                               nn.Linear(self.dim_h2, 1)))
 
-    def forward(self, x, output=None):
+    def forward(self, x):
         y = []
         for i in range(self.dim_y):
             _, h = self.rnn[i](x)
@@ -243,73 +243,153 @@ class MCW_RNN(nn.Module):
                               nn.Linear(self.dim_h2, 1)))
         self.reset()
 
-    def forward(self, x, output='max_period'):
+    def forward(self, x, mode='slowest'):
+        '''
+        mode
+        ----------
+        slowest: predict quality variable at the slowest sampling rate.
+
+        fastest: predict quality variable at the fastest sampling rate.
+
+        best: predict quality variable at the fastest sampling rate, where
+        each sample is predicted with same sequence length.
+        '''
         y_list = []
         for i in range(self.dim_y):
-            y = []
-            h1 = torch.zeros(x.shape[0],
-                             len(args.x1) * self.multiplier).cuda(args.gpu)
-            h2 = torch.zeros(x.shape[0],
-                             len(args.x2) * self.multiplier).cuda(args.gpu)
-            h3 = torch.zeros(x.shape[0],
-                             len(args.x3) * self.multiplier).cuda(args.gpu)
-            for j in range(x.shape[1]):
-                h = torch.cat((h1, h2, h3), dim=1)
-                if (j + 1) % args.x2_rate == 0:
-                    if (j + 1) % args.x3_rate == 0:
-                        h1 = self.act(
-                            torch.matmul(x[:,
-                                           j], self.w_x[i][:, :h1.shape[1]]) +
-                            torch.matmul(h, self.w_h[i][:, :h1.shape[1]]) +
-                            self.b[i][:h1.shape[1]])
-                        h2 = self.act(
-                            torch.matmul(
-                                x[:,
-                                  j], self.w_x[i][:, h1.shape[1]:h1.shape[1] +
-                                                  h2.shape[1]]) +
-                            torch.matmul(
-                                h, self.w_h[i][:, h1.shape[1]:h1.shape[1] +
-                                               h2.shape[1]]) +
-                            self.b[i][h1.shape[1]:h1.shape[1] + h2.shape[1]])
-                        h3 = self.act(
-                            torch.matmul(x[:, j], self.w_x[i][:,
-                                                              -h3.shape[1]:]) +
-                            torch.matmul(h, self.w_h[i][:, -h3.shape[1]:]) +
-                            self.b[i][-h3.shape[1]:])
+            if mode == 'best':
+                y = []
+                for j in range(x.shape[0]):
+                    h1 = torch.zeros(len(args.x1) * self.multiplier).cuda(
+                        args.gpu)
+                    h2 = torch.zeros(len(args.x2) * self.multiplier).cuda(
+                        args.gpu)
+                    h3 = torch.zeros(len(args.x3) * self.multiplier).cuda(
+                        args.gpu)
+                    for k in range(x.shape[1]):
+                        x_t = x[j, k]
+                        h = torch.cat((h1, h2, h3), dim=0)
+                        if sum(x_t != args.miss_value) == len(args.x1):
+                            h1 = self.act(
+                                torch.matmul(
+                                    x_t[:len(args.x1)], self.w_x[i]
+                                    [:len(args.x1), :h1.shape[0]]) +
+                                torch.matmul(h, self.w_h[i][:, :h1.shape[0]]) +
+                                self.b[i][:h1.shape[0]])
+                        elif sum(x_t != args.miss_value) == len(args.x1) + len(
+                                args.x2):
+                            h1 = self.act(
+                                torch.matmul(
+                                    x_t[:len(args.x1) + len(args.x2)],
+                                    self.w_x[i][:len(args.x1) +
+                                                len(args.x2), :h1.shape[0]]) +
+                                torch.matmul(h, self.w_h[i][:, :h1.shape[0]]) +
+                                self.b[i][:h1.shape[0]])
+                            h2 = self.act(
+                                torch.matmul(
+                                    x_t[:len(args.x1) +
+                                        len(args.x2)], self.w_x[i]
+                                    [:len(args.x1) + len(args.x2),
+                                     h1.shape[0]:h1.shape[0] + h2.shape[0]]) +
+                                torch.matmul(
+                                    h, self.w_h[i][:, h1.shape[0]:h1.shape[0] +
+                                                   h2.shape[0]]) +
+                                self.b[i][h1.shape[0]:h1.shape[0] +
+                                          h2.shape[0]])
+                        else:
+                            h1 = self.act(
+                                torch.matmul(x_t, self.w_x[i]
+                                             [:, :h1.shape[0]]) +
+                                torch.matmul(h, self.w_h[i][:, :h1.shape[0]]) +
+                                self.b[i][:h1.shape[0]])
+                            h2 = self.act(
+                                torch.matmul(
+                                    x_t, self.w_x[i][:,
+                                                     h1.shape[0]:h1.shape[0] +
+                                                     h2.shape[0]]) +
+                                torch.matmul(
+                                    h, self.w_h[i][:, h1.shape[0]:h1.shape[0] +
+                                                   h2.shape[0]]) +
+                                self.b[i][h1.shape[0]:h1.shape[0] +
+                                          h2.shape[0]])
+                            h3 = self.act(
+                                torch.matmul(x_t, self.w_x[i][:,
+                                                              -h3.shape[0]:]) +
+                                torch.matmul(h, self.w_h[i][:,
+                                                            -h3.shape[0]:]) +
+                                self.b[i][-h3.shape[0]:])
+                    y.append(self.mlp[i](torch.cat((h1, h2, h3),
+                                                   dim=0)).squeeze())
+                y_list.append(torch.stack(y, dim=0).reshape(-1))
+            else:
+                y = []
+                h1 = torch.zeros(x.shape[0],
+                                 len(args.x1) * self.multiplier).cuda(args.gpu)
+                h2 = torch.zeros(x.shape[0],
+                                 len(args.x2) * self.multiplier).cuda(args.gpu)
+                h3 = torch.zeros(x.shape[0],
+                                 len(args.x3) * self.multiplier).cuda(args.gpu)
+                for j in range(x.shape[1]):
+                    h = torch.cat((h1, h2, h3), dim=1)
+                    if (j + 1) % args.x2_rate == 0:
+                        if (j + 1) % args.x3_rate == 0:
+                            h1 = self.act(
+                                torch.matmul(x[:, j], self.w_x[i]
+                                             [:, :h1.shape[1]]) +
+                                torch.matmul(h, self.w_h[i][:, :h1.shape[1]]) +
+                                self.b[i][:h1.shape[1]])
+                            h2 = self.act(
+                                torch.matmul(
+                                    x[:,
+                                      j], self.w_x[i][:,
+                                                      h1.shape[1]:h1.shape[1] +
+                                                      h2.shape[1]]) +
+                                torch.matmul(
+                                    h, self.w_h[i][:, h1.shape[1]:h1.shape[1] +
+                                                   h2.shape[1]]) +
+                                self.b[i][h1.shape[1]:h1.shape[1] +
+                                          h2.shape[1]])
+                            h3 = self.act(
+                                torch.matmul(x[:, j], self.w_x[i]
+                                             [:, -h3.shape[1]:]) +
+                                torch.matmul(h, self.w_h[i][:,
+                                                            -h3.shape[1]:]) +
+                                self.b[i][-h3.shape[1]:])
+                        else:
+                            h1 = self.act(
+                                torch.matmul(
+                                    x[:, j, :len(args.x1) + len(args.x2)],
+                                    self.w_x[i][:len(args.x1) +
+                                                len(args.x2), :h1.shape[1]]) +
+                                torch.matmul(h, self.w_h[i][:, :h1.shape[1]]) +
+                                self.b[i][:h1.shape[1]])
+                            h2 = self.act(
+                                torch.matmul(
+                                    x[:, j, :len(args.x1) +
+                                      len(args.x2)], self.w_x[i]
+                                    [:len(args.x1) + len(args.x2),
+                                     h1.shape[1]:h1.shape[1] + h2.shape[1]]) +
+                                torch.matmul(
+                                    h, self.w_h[i][:, h1.shape[1]:h1.shape[1] +
+                                                   h2.shape[1]]) +
+                                self.b[i][h1.shape[1]:h1.shape[1] +
+                                          h2.shape[1]])
                     else:
                         h1 = self.act(
                             torch.matmul(
-                                x[:,
-                                  j, :len(args.x1) + len(args.x2)], self.w_x[i]
-                                [:len(args.x1) + len(args.x2), :h1.shape[1]]) +
+                                x[:, j, :len(args.x1)], self.w_x[i]
+                                [:len(args.x1), :h1.shape[1]]) +
                             torch.matmul(h, self.w_h[i][:, :h1.shape[1]]) +
                             self.b[i][:h1.shape[1]])
-                        h2 = self.act(
-                            torch.matmul(
-                                x[:,
-                                  j, :len(args.x1) + len(args.x2)], self.w_x[i]
-                                [:len(args.x1) + len(args.x2),
-                                 h1.shape[1]:h1.shape[1] + h2.shape[1]]) +
-                            torch.matmul(
-                                h, self.w_h[i][:, h1.shape[1]:h1.shape[1] +
-                                               h2.shape[1]]) +
-                            self.b[i][h1.shape[1]:h1.shape[1] + h2.shape[1]])
+                    if mode == 'fastest':
+                        y.append(self.mlp[i](torch.cat((h1, h2, h3),
+                                                       dim=1)).squeeze())
+                if mode == 'fastest':
+                    y_list.append(torch.stack(y, dim=1).reshape(-1))
+                elif mode == 'slowest':
+                    y_list.append(self.mlp[i](torch.cat((h1, h2, h3),
+                                                        dim=1)).squeeze())
                 else:
-                    h1 = self.act(
-                        torch.matmul(x[:, j, :len(args.x1)], self.w_x[i]
-                                     [:len(args.x1), :h1.shape[1]]) +
-                        torch.matmul(h, self.w_h[i][:, :h1.shape[1]]) +
-                        self.b[i][:h1.shape[1]])
-                if output == 'min_period':
-                    y.append(self.mlp[i](torch.cat((h1, h2, h3),
-                                                   dim=1)).squeeze())
-            if output == 'min_period':
-                y_list.append(torch.stack(y, dim=1).reshape(-1))
-            elif output == 'max_period':
-                y_list.append(self.mlp[i](torch.cat((h1, h2, h3),
-                                                    dim=1)).squeeze())
-            else:
-                raise Exception('Wrong mode selection!')
+                    raise Exception('Wrong mode selection!')
         return torch.stack(y_list, dim=1)
 
     def reset(self):
@@ -433,10 +513,11 @@ def train(X_train,
 
         if args.model == 'MCW-RNN':
 
-            # Performance on different time steps
+            # performance on different time steps
+            net.eval()
             with torch.no_grad():
                 y_pred = scaler.inverse_transform(
-                    net(dataset_test.X, 'min_period').cpu().numpy())
+                    net(dataset_test.X, 'fastest').cpu().numpy())
             r2 = np.zeros((args.y_rate, len(args.y)))
             rmse = np.zeros((args.y_rate, len(args.y)))
             for i in range(args.y_rate):
@@ -476,6 +557,41 @@ def train(X_train,
                 plt.legend()
                 plt.title('RMSE on different time step (QV_{})'.format(i + 1))
             plt.savefig(args.path + args.tag + 'RMSE.png')
+            plt.close()
+
+            # best performance
+            dataset_best = MyDataset(X_test_best, y_test_best)
+            with torch.no_grad():
+                y_pred = scaler.inverse_transform(
+                    net(dataset_best.X, 'best').cpu().numpy())
+            r2 = [
+                round(100 * _, 2)
+                for _ in r2_score(y_test_best[args.y_rate - 1:],
+                                  y_pred,
+                                  multioutput='raw_values')
+            ]
+            rmse = [
+                round(math.sqrt(_), 3)
+                for _ in mean_squared_error(y_test_best[args.y_rate - 1:],
+                                            y_pred,
+                                            multioutput='raw_values')
+            ]
+
+            # plot
+            plt.figure(figsize=args.figsize, dpi=args.dpi)
+            for i in range(len(args.y)):
+                plt.subplot(len(args.y), 1, i + 1)
+                plt.plot(y_test_best[args.y_rate - 1:, i],
+                         label='Ground Truth')
+                plt.plot(y_pred[:, i], label='Prediction')
+                plt.xlabel('Sample')
+                plt.ylabel('Value')
+                plt.grid()
+                plt.legend()
+                plt.title(
+                    'Prediction curve of QV{} (R2= {:.2f}%, RMSE= {:.3f})'.
+                    format(i + 1, r2[i], rmse[i]))
+            plt.savefig(args.path + args.tag + 'Best.png')
             plt.close()
 
     return acc_train, acc_test
@@ -702,6 +818,7 @@ def main():
             r2_train, r2_val = train(X_train_3d[:-num_val], y_train[:-num_val],
                                      X_train_3d[-num_val:], y_train[-num_val:],
                                      scaler, 'val')
+            torch.cuda.empty_cache()
             print('*' * 50)
             record.update({str(param): [list(r2_train[-1]), list(r2_val[-1])]})
             if sum(r2_val[-1]) > r2_best:
