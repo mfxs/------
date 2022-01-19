@@ -51,9 +51,9 @@ parser.add_argument('-model',
                     help='D-MLP|U-MLP|L-MLP|D-RNN|U-RNN|Z-RNN|MCW-RNN')
 parser.add_argument('-kind', type=str, default='cubic')
 parser.add_argument('-multiplier', type=int, default=15)
-parser.add_argument('-dim_h', type=int, default=128)
+parser.add_argument('-dim_h', type=int, default=256)
 parser.add_argument('-lr', type=float, default=0.001)
-parser.add_argument('-weight_decay', type=float, default=0.1)
+parser.add_argument('-weight_decay', type=float, default=0.005)
 parser.add_argument('-step_size', type=int, default=50)
 parser.add_argument('-gamma', type=float, default=0.5)
 parser.add_argument('-epoch1', type=int, default=200)
@@ -510,6 +510,7 @@ def train(X_train,
         plot_loss_acc(loss_hist, acc_train, acc_test)
         plot_prediction_curve(y_train_raw, y_fit, r2_train, rmse_train, y_test,
                               y_pred, r2_test, rmse_test)
+        torch.save(net.state_dict(), args.path + args.tag + 'model.pt')
 
         if args.model == 'MCW-RNN':
 
